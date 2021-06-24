@@ -51,7 +51,7 @@
     position: fixed;
     bottom: 0;
     left: 0;
-    padding: $space-20 $space-8 0 $space-8 !important;
+    padding: $space-12 $space-8 0 $space-8 !important;
     background-color: $white;
     width: 100vw;
     justify-content: space-around;
@@ -60,11 +60,5 @@
     nb-action {
       padding: 0;
     }
-  }
-}
-
-@media all and (max-width: $mobile-width) {
-  .home-navbar-menu-options {
-    padding: $space-20 $space-8 0 $space-8 !important;
   }
 }

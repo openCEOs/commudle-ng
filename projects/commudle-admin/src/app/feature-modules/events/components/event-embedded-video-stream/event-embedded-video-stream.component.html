@@ -1,104 +1,100 @@
-<div class="embedded-video-stream" *ngIf="!event.custom_agenda">
+<div *ngIf="!event.custom_agenda" class="embedded-video-stream">
   <div class="embedded-video-stream-form">
-    <form *ngIf="event.editable"  [formGroup]="embeddedVideoStreamForm" (ngSubmit)="createOrUpdate()">
-        <div>
-          <nb-select placeholder="Source*" fullWidth formControlName="source" status="primary" size="small" (selectedChange)="updateValidators()">
-
-            <nb-option *ngIf="[1, 74, 113, 116, 118, 119, 121, 124, 125, 126, 127, 128, 130, 131, 132, 133].includes(community.id)" [value]="EEmbeddedVideoStreamSources.COMMUDLE">
-              <div>
-                Commudle Stage
-                  <br/>
-                  <small>
-                    (Upto 20 people live on the stage and upto 500 viewers!)
-                  </small>
-                  <br/>
-              </div>
-            </nb-option>
-            <nb-option [value]="EEmbeddedVideoStreamSources.ZOOM">
-              ZOOM (embedded into browser)
-            </nb-option>
-            <nb-option [value]="EEmbeddedVideoStreamSources.EXTERNAL_LINK">
-              External Link (to platforms like Google Meet)
-            </nb-option>
-            <nb-option [value]="EEmbeddedVideoStreamSources.YOUTUBE">
-              YouTube Live Embed (URL)
-            </nb-option>
-            <nb-option [value]="EEmbeddedVideoStreamSources.OTHER">
-              IFrame (Paste the code of any Iframe)
-            </nb-option>
-          </nb-select>
-        </div>
-
-        <div>
-          <label>
-            <span *ngIf="embeddedVideoStreamForm.get('source').value == EEmbeddedVideoStreamSources.ZOOM">
-              Zoom Meeting ID
-            </span>
-            <span *ngIf="embeddedVideoStreamForm.get('source').value == EEmbeddedVideoStreamSources.YOUTUBE">
-              Video Url
-            </span>
-            <span *ngIf="embeddedVideoStreamForm.get('source').value == EEmbeddedVideoStreamSources.JITSI_MEET">
-              Jitsi Meeting ID (people will be required to log in to join)
-            </span>
-
-            <span *ngIf="embeddedVideoStreamForm.get('source').value == EEmbeddedVideoStreamSources.EXTERNAL_LINK">
-              Paste link here
-            </span>
-
-            <span *ngIf="embeddedVideoStreamForm.get('source').value == EEmbeddedVideoStreamSources.OTHER">
-              Other (Embedded Iframe)
-            </span>
-            <span *ngIf="embeddedVideoStreamForm['controls'].embed_code.touched && embeddedVideoStreamForm['controls'].embed_code.invalid && embeddedVideoStreamForm['controls'].embed_code.errors.required" class="validation-error-text">
+    <form (ngSubmit)="createOrUpdate()" *ngIf="event.editable" [formGroup]="embeddedVideoStreamForm">
+      <div>
+        <nb-select (selectedChange)="updateValidators()" formControlName="source" fullWidth placeholder="Source*"
+                   size="small" status="primary">
+          <nb-option
+            *ngIf="[1, 74, 113, 116, 118, 119, 121, 124, 125, 126, 127, 128, 130, 131, 132, 133].includes(community.id)"
+            [value]="EEmbeddedVideoStreamSources.COMMUDLE">
+            <div>
+              Commudle Stage
+              <br/>
+              <small>
+                (Upto 20 people live on the stage and upto 500 viewers!)
+              </small>
+              <br/>
+            </div>
+          </nb-option>
+          <nb-option [value]="EEmbeddedVideoStreamSources.ZOOM">
+            ZOOM (embedded into browser)
+          </nb-option>
+          <nb-option [value]="EEmbeddedVideoStreamSources.EXTERNAL_LINK">
+            External Link (to platforms like Google Meet)
+          </nb-option>
+          <nb-option [value]="EEmbeddedVideoStreamSources.YOUTUBE">
+            YouTube Live Embed (URL)
+          </nb-option>
+          <nb-option [value]="EEmbeddedVideoStreamSources.OTHER">
+            IFrame (Paste the code of any Iframe)
+          </nb-option>
+          <nb-option disabled>
+            Meet using Jitsi
+          </nb-option>
+        </nb-select>
+      </div>
+      <div>
+        <label>
+          <span *ngIf="embeddedVideoStreamForm.get('source').value == EEmbeddedVideoStreamSources.ZOOM">
+            Zoom Meeting ID
+          </span>
+          <span *ngIf="embeddedVideoStreamForm.get('source').value == EEmbeddedVideoStreamSources.YOUTUBE">
+            Video Url
+          </span>
+          <span *ngIf="embeddedVideoStreamForm.get('source').value == EEmbeddedVideoStreamSources.EXTERNAL_LINK">
+            Paste link here
+          </span>
+          <span *ngIf="embeddedVideoStreamForm.get('source').value == EEmbeddedVideoStreamSources.OTHER">
+            Other (Embedded Iframe)
+          </span>
+          <span
+            *ngIf="embeddedVideoStreamForm['controls'].embed_code.touched && embeddedVideoStreamForm['controls'].embed_code.invalid && embeddedVideoStreamForm['controls'].embed_code.errors.required"
+            class="validation-error-text">
+            Required Field
+          </span>
+          <textarea
+            [ngClass]="{'hidden': embeddedVideoStreamForm.get('source').value == EEmbeddedVideoStreamSources.COMMUDLE}"
+            formControlName="embed_code" fullWidth nbInput
+            placeholder="Type here"></textarea>
+        </label>
+      </div>
+      <div *ngIf="embeddedVideoStreamForm.get('source').value == EEmbeddedVideoStreamSources.ZOOM">
+        <label>
+          Meeting/Webinar Host Email <span
+          *ngIf="embeddedVideoStreamForm['controls'].zoom_host_email.touched && embeddedVideoStreamForm['controls'].zoom_host_email.invalid && embeddedVideoStreamForm['controls'].zoom_host_email.errors.required"
+          class="validation-error-text">
               Required Field
             </span>
-            <textarea placeholder="Type here" nbInput fullWidth formControlName="embed_code" [ngClass]="{'hidden': embeddedVideoStreamForm.get('source').value == EEmbeddedVideoStreamSources.COMMUDLE}"></textarea>
-          </label>
-
-        </div>
-        <div *ngIf="embeddedVideoStreamForm.get('source').value == EEmbeddedVideoStreamSources.ZOOM">
-          <label>
-            Meeting/Webinar Host Email <span *ngIf="embeddedVideoStreamForm['controls'].zoom_host_email.touched && embeddedVideoStreamForm['controls'].zoom_host_email.invalid && embeddedVideoStreamForm['controls'].zoom_host_email.errors.required" class="validation-error-text">
+          <input formControlName="zoom_host_email" fullWidth nbInput placeholder="Type email id here">
+        </label>
+      </div>
+      <div *ngIf="embeddedVideoStreamForm.get('source').value == EEmbeddedVideoStreamSources.ZOOM">
+        <label>
+          Meeting/Webinar Password (visible only to organizers) <span
+          *ngIf="embeddedVideoStreamForm['controls'].zoom_password.touched && embeddedVideoStreamForm['controls'].zoom_password.invalid && embeddedVideoStreamForm['controls'].zoom_password.errors.required"
+          class="validation-error-text">
               Required Field
             </span>
-            <input nbInput fullWidth formControlName="zoom_host_email" placeholder="Type email id here">
-          </label>
-        </div>
-        <div *ngIf="embeddedVideoStreamForm.get('source').value == EEmbeddedVideoStreamSources.ZOOM">
-          <label>
-            Meeting/Webinar Password (visible only to organizers) <span *ngIf="embeddedVideoStreamForm['controls'].zoom_password.touched && embeddedVideoStreamForm['controls'].zoom_password.invalid && embeddedVideoStreamForm['controls'].zoom_password.errors.required" class="validation-error-text">
-              Required Field
-            </span>
-            <input nbInput fullWidth formControlName="zoom_password" placeholder="Type password here">
-          </label>
-        </div>
-
+          <input formControlName="zoom_password" fullWidth nbInput placeholder="Type password here">
+        </label>
+      </div>
       <div class="save-button-bottom">
-        <button [disabled]="!embeddedVideoStreamForm.valid" type="submit" nbButton fullWidth status="info">
-          <span *ngIf="(!evs || !evs.hms_room_id || (evs && embeddedVideoStreamForm.get('source').value !== EEmbeddedVideoStreamSources.COMMUDLE))">Save</span>
-          <span *ngIf="evs && evs.hms_room_id && embeddedVideoStreamForm.get('source').value === EEmbeddedVideoStreamSources.COMMUDLE">Reset Room</span>
+        <button [disabled]="!embeddedVideoStreamForm.valid" fullWidth nbButton status="info" type="submit">
+          <span
+            *ngIf="!evs || !evs.hms_room_id || evs && embeddedVideoStreamForm.get('source').value !== EEmbeddedVideoStreamSources.COMMUDLE">Save</span>
+          <span
+            *ngIf="evs && evs.hms_room_id && embeddedVideoStreamForm.get('source').value === EEmbeddedVideoStreamSources.COMMUDLE">Reset Room</span>
         </button>
       </div>
-
     </form>
   </div>
   <div class="preview">
-    <app-video-stream
-      *ngIf="evs && currentUser"
-      [started] = "true"
-      [currentUser]="currentUser"
-      [videoSource]="embeddedVideoStreamForm.get('source').value"
-      [videoCode]="embeddedVideoStreamForm.get('embed_code').value || evs.hms_room_id"
-      [fillerText]="'Auto Preview'"
-      [zoomHostEmail]="evs.zoom_host_email"
-      [zoomPassword]="evs.zoom_password"
-      [zoomSignature]="evs.zoom_attendee_signature"
-      [zoomHostSignature]="evs.zoom_host_signature"
-      [hmsRoomId]="evs.hms_room_id"
-      [userEmail]="currentUser.email"
-      [userName]="currentUser.name"
-      >
-    </app-video-stream>
+    <app-video-stream *ngIf="evs && currentUser" [currentUser]="currentUser" [fillerText]="'Auto Preview'"
+                      [hmsRoomId]="evs.hms_room_id" [started]="true" [userEmail]="currentUser.email"
+                      [userName]="currentUser.name"
+                      [videoCode]="embeddedVideoStreamForm.get('embed_code').value || evs.hms_room_id"
+                      [videoSource]="embeddedVideoStreamForm.get('source').value" [zoomHostEmail]="evs.zoom_host_email"
+                      [zoomHostSignature]="evs.zoom_host_signature" [zoomPassword]="evs.zoom_password"
+                      [zoomSignature]="evs.zoom_attendee_signature"></app-video-stream>
   </div>
-
-
 </div>

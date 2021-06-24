@@ -1,0 +1,22 @@
+<div *ngIf="currentUser" class="messages-container">
+  <app-messages-list (getPreviousMessages)="getDiscussionMessages()" (sendDelete)="sendDelete($event)"
+                     (sendFlag)="sendFlag($event)" (sendReply)="sendReply($event)" [allActions]="allActions"
+                     [currentUser]="currentUser" [messages]="messages" [permittedActions]="permittedActions"
+                     [showMessagesLoader]="showMessagesLoader"></app-messages-list>
+  <div class="send-message">
+    <emoji-mart (emojiSelect)="addEmoji($event)" [ngClass]="{'active': showEmojiPicker}" [style]="{width: '100%'}"
+                set="twitter" title="Select an emoji"></emoji-mart>
+    <form (submit)="sendMessage()" *ngIf="permittedActions.includes(allActions.ADD)" [formGroup]="messageForm">
+      <nb-form-field>
+        <button (click)="showEmojiPicker = !showEmojiPicker" ghost nbButton nbPrefix type="button">
+          <nb-icon icon="grin" pack="far"></nb-icon>
+        </button>
+        <input #messageInput formControlName="content" fullWidth maxlength="200" minlength="1" nbInput
+               placeholder="Add a Comment" type="text">
+        <button [disabled]="!messageForm.valid" ghost nbButton nbSuffix>
+          <nb-icon icon="paper-plane"></nb-icon>
+        </button>
+      </nb-form-field>
+    </form>
+  </div>
+</div>

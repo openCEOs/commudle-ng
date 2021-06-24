@@ -1,41 +1,39 @@
-import {AfterViewChecked, ChangeDetectorRef, Component, Inject, OnInit, PLATFORM_ID} from '@angular/core';
-import {DOCUMENT, isPlatformBrowser} from '@angular/common';
-import {Router} from '@angular/router';
-import {Title} from '@angular/platform-browser';
-import {faBars} from '@fortawesome/free-solid-svg-icons';
-import {NbIconLibraries, NbMenuItem, NbSidebarService, NbWindowService, NbWindowState} from '@nebular/theme';
-import {ApiRoutesService} from 'projects/shared-services/api-routes.service';
-import {environment} from 'projects/commudle-admin/src/environments/environment';
-import {LibAuthwatchService} from 'projects/shared-services/lib-authwatch.service';
-import {ICurrentUser} from 'projects/shared-models/current_user.model';
-import {ActionCableConnectionSocket} from 'projects/shared-services/action-cable-connection.socket';
-import {AppCentralNotificationService} from 'projects/commudle-admin/src/app/services/app-central-notifications.service';
-import {CookieConsentComponent} from 'projects/shared-components/cookie-consent/cookie-consent.component';
-import {CookieConsentService} from './services/cookie-consent.service';
-import {FooterService} from 'projects/commudle-admin/src/app/services/footer.service';
-import { TruncateTextPipe } from "projects/shared-pipes/truncate-text.pipe";
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { AfterViewChecked, ChangeDetectorRef, Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { Router } from '@angular/router';
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { NbIconLibraries, NbMenuItem, NbSidebarService, NbWindowService, NbWindowState } from '@nebular/theme';
+import { AppCentralNotificationService } from 'projects/commudle-admin/src/app/services/app-central-notifications.service';
+import { FooterService } from 'projects/commudle-admin/src/app/services/footer.service';
+import { environment } from 'projects/commudle-admin/src/environments/environment';
+import { CookieConsentComponent } from 'projects/shared-components/cookie-consent/cookie-consent.component';
+import { ICurrentUser } from 'projects/shared-models/current_user.model';
+import { TruncateTextPipe } from 'projects/shared-pipes/truncate-text.pipe';
+import { ActionCableConnectionSocket } from 'projects/shared-services/action-cable-connection.socket';
+import { ApiRoutesService } from 'projects/shared-services/api-routes.service';
+import { LibAuthwatchService } from 'projects/shared-services/lib-authwatch.service';
+import { CookieConsentService } from './services/cookie-consent.service';
 
 // import * as LogRocket from 'logrocket';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
-    providers: [TruncateTextPipe]
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+  providers: [TruncateTextPipe]
 })
-
-
 export class AppComponent implements OnInit, AfterViewChecked {
 
-    sideBarNotifications = false;
-    sideBarState = 'collapsed';
-    faBars = faBars;
-    currentUser: ICurrentUser;
-    userContextMenu: NbMenuItem[] = [
-        {title: 'Logout', link: '/logout'},
-    ];
-    cookieAccepted = false;
-    footerStatus = true;
+  sideBarNotifications = false;
+  sideBarState = 'collapsed';
+  faBars = faBars;
+  currentUser: ICurrentUser;
+  userContextMenu: NbMenuItem[] = [
+    { title: 'Logout', link: '/logout' }
+  ];
+  cookieAccepted = false;
+  footerStatus = true;
 
   private isBrowser: boolean = isPlatformBrowser(this.platformId);
 
@@ -60,8 +58,9 @@ export class AppComponent implements OnInit, AfterViewChecked {
     this.apiRoutes.setBaseUrl(environment.base_url);
     this.actionCableConnectionSocket.setBaseUrl(environment.anycable_url);
 
-    this.iconLibraries.registerFontPack('fas', {iconClassPrefix: 'fa', packClass: 'fas'});
-    this.iconLibraries.registerFontPack('fab', {iconClassPrefix: 'fa', packClass: 'fab'});
+    this.iconLibraries.registerFontPack('far', { iconClassPrefix: 'fa', packClass: 'far' });
+    this.iconLibraries.registerFontPack('fas', { iconClassPrefix: 'fa', packClass: 'fas' });
+    this.iconLibraries.registerFontPack('fab', { iconClassPrefix: 'fa', packClass: 'fab' });
   }
 
   ngOnInit() {
@@ -74,8 +73,8 @@ export class AppComponent implements OnInit, AfterViewChecked {
           link: `/users/${currentUser.username}`,
           badge: {
             text: 'Profile',
-            status: 'basic',
-          },
+            status: 'basic'
+          }
         });
 
         // LogRocket.init('g90s8l/commudle');
@@ -139,8 +138,8 @@ export class AppComponent implements OnInit, AfterViewChecked {
   }
 
   toggleSidebar() {
-      this.sideBarState = this.sideBarState === 'collapsed' ? 'expanded' : 'collapsed';
-      this.sidebarService.toggle(false, 'mainMenu');
+    this.sideBarState = this.sideBarState === 'collapsed' ? 'expanded' : 'collapsed';
+    this.sidebarService.toggle(false, 'mainMenu');
   }
 
   login() {

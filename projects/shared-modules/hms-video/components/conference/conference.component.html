@@ -1,69 +1,68 @@
 <div class="conference">
-  <div class="screen-video" *ngIf="screenShareStream">
+  <div *ngIf="screenShareStream" class="screen-video">
     <app-user-video
-    [type]="'screenshare'"
-    [stream]="streams[screenShareStream].stream"
-    [userDetails]="(peers[streams[screenShareStream].uid] ? peers[streams[screenShareStream].uid].user : {})"
-    [overridable]="serverClient.role === EHmsRoles.HOST"
-    [self]="false"
-    (mutePeer)="mutePeer(streams[screenShareStream].uid)"
-    (removeFromStage)="removePeerFromStage(streams[screenShareStream].uid)"
+      (mutePeer)="mutePeer(streams[screenShareStream].uid)"
+      (removeFromStage)="removePeerFromStage(streams[screenShareStream].uid)"
+      [overridable]="serverClient.role === EHmsRoles.HOST"
+      [self]="false"
+      [stream]="streams[screenShareStream].stream"
+      [type]="'screenshare'"
+      [userDetails]="(peers[streams[screenShareStream].uid] ? peers[streams[screenShareStream].uid].user : {})"
     ></app-user-video>
   </div>
   <div
-    class="user-videos"
-    [ngClass]="{'max-one': numVids === 1, 'max-four': (numVids > 1 && numVids <= 4), 'more-than-four': (numVids > 4), 'vertical': (screenShareStream != null)}">
+    [ngClass]="{'max-one': numVids === 1, 'max-four': numVids > 1 && numVids <= 4, 'more-than-four': numVids > 4, 'vertical': screenShareStream != null}"
+    class="user-videos">
     <!-- <app-user-video
       *ngIf="localStream && onStage"
       [userDetails]="peers[client.uid]"
       [stream]="localStream"
       ></app-user-video>
     <app-user-video *ngIf="localScreen" [stream]="localScreen"></app-user-video> -->
-    <div class="video" *ngFor="let stream of streams | keyvalue" [ngStyle]="{'display': ((screenShareStream !== stream.key) ? 'unset' : 'none')}">
+    <div *ngFor="let stream of streams | keyvalue"
+         [ngStyle]="{'display': screenShareStream !== stream.key ? 'unset' : 'none'}"
+         class="video">
       <!-- show only non screen video elements here -->
-      <app-user-video
-      *ngIf="screenShareStream !== stream.key"
-      [type]="'camera'"
-      [stream]="stream.value['stream']"
-      [userDetails]="(peers[stream.value['uid']] ? peers[stream.value['uid']].user : {})"
-      [overridable]="serverClient.role === EHmsRoles.HOST"
-      [self]="stream.value['uid'] === client.uid"
-      (mutePeer)="mutePeer(stream.value['uid'])"
-      (removeFromStage)="removePeerFromStage(stream.value['uid'])"
-      ></app-user-video>
+      <app-user-video (mutePeer)="mutePeer(stream.value['uid'])"
+                      (removeFromStage)="removePeerFromStage(stream.value['uid'])"
+                      *ngIf="screenShareStream !== stream.key" [overridable]="serverClient.role === EHmsRoles.HOST"
+                      [self]="stream.value['uid'] === client.uid" [stream]="stream.value['stream']" [type]="'camera'"
+                      [userDetails]="peers[stream.value['uid']] ? peers[stream.value['uid']].user : {}"></app-user-video>
     </div>
 
   </div>
-   <!-- controls should be visible to the user if they are on the stage or if they are the host -->
-   <div class="controls d-flex justify-content-center">
-    <div class="mic" *ngIf="onStage">
-      <button nbButton ghost (click)="toggleAudio(!this.mic)">
+  <!-- controls should be visible to the user if they are on the stage or if they are the host -->
+  <div class="controls d-flex justify-content-center">
+    <div *ngIf="onStage" class="mic">
+      <button (click)="toggleAudio(!this.mic)" nbButton shape="round">
         <nb-icon icon="{{mic ? 'mic' : 'mic-off'}}"></nb-icon>
       </button>
     </div>
-    <div class="camera" *ngIf="onStage">
-      <button nbButton ghost (click)="toggleVideo(!this.camera)">
+    <div *ngIf="onStage" class="camera">
+      <button (click)="toggleVideo(!this.camera)" nbButton shape="round">
         <nb-icon icon="{{camera ? 'video' : 'video-off'}}"></nb-icon>
       </button>
     </div>
-    <div class="end-meeting" *ngIf="serverClient.role === EHmsRoles.HOST">
-      <button nbButton ghost (click)="confirmEndConference(endWebinarAlert)" >
-        <nb-icon icon="phone" status="danger" pack="fas"></nb-icon>
+    <div *ngIf="serverClient.role === EHmsRoles.HOST" class="end-meeting">
+      <button (click)="confirmEndConference(endWebinarAlert)" nbButton shape="round">
+        <nb-icon icon="phone" pack="fas" status="danger"></nb-icon>
       </button>
     </div>
-    <div class="screen" *ngIf="onStage">
-      <button nbButton ghost (click)="toggleScreen()" [disabled]="screenShareStream && !screenShare" [ngClass]="{'cursor-disabled': (screenShareStream && !screenShare) === true}">
-        <nb-icon icon="laptop" pack="fas" status="{{ localScreen ? 'success' : 'basic' }}" class="justify-content-center flex-column"></nb-icon>
+    <div *ngIf="onStage" class="screen">
+      <button (click)="toggleScreen()" [disabled]="screenShareStream && !screenShare"
+              [ngClass]="{'cursor-disabled': (screenShareStream && !screenShare) === true}" nbButton shape="round">
+        <nb-icon class="justify-content-center flex-column" icon="laptop" pack="fas"
+                 status="{{localScreen ? 'success' : ''}}"></nb-icon>
       </button>
     </div>
-    <div class="settings" *ngIf="onStage || serverClient.role === EHmsRoles.HOST">
-      <button nbButton ghost (click)="showSettings = !showSettings">
+    <div *ngIf="onStage || serverClient.role === EHmsRoles.HOST" class="settings">
+      <button (click)="showSettings = !showSettings" nbButton shape="round">
         <nb-icon icon="settings"></nb-icon>
       </button>
     </div>
     <!-- <div class="recording" *ngIf="hmsClient.role === EHmsRoles.HOST"></div> -->
-    <div class="stage" *ngIf="onStage || serverClient.role === EHmsRoles.HOST">
-      <button nbButton ghost (click)="toggleStage()">
+    <div *ngIf="onStage || serverClient.role === EHmsRoles.HOST" class="stage">
+      <button (click)="toggleStage()" nbButton shape="round">
         <span *ngIf="onStage">Exit </span>
         <span *ngIf="!onStage">Join </span>
         &nbsp; Stage
@@ -71,8 +70,10 @@
     </div>
   </div>
 
-  <div class="stream-settings" *ngIf="showSettings">
-    <app-settings [onStage]="onStage" [invitation]="serverClient.role === EHmsRoles.VIEWER" (closeSettings)="this.showSettings = false" (joinStage)="toggleStage(); this.showSettings = false;"></app-settings>
+  <div *ngIf="showSettings" class="stream-settings">
+    <app-settings (closeSettings)="this.showSettings = false" (joinStage)="toggleStage(); this.showSettings = false;"
+                  [invitation]="serverClient.role === EHmsRoles.VIEWER"
+                  [onStage]="onStage"></app-settings>
   </div>
 </div>
 
@@ -86,8 +87,8 @@
       </p>
     </nb-card-body>
     <nb-card-footer>
-      <button nbButton (click)="endConference(); ref.close();">Yes</button>
-      <button nbButton (click)="ref.close()">No</button>
+      <button (click)="endConference(); ref.close();" nbButton>Yes</button>
+      <button (click)="ref.close()" nbButton>No</button>
     </nb-card-footer>
   </nb-card>
 </ng-template>

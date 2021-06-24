@@ -1,0 +1,16 @@
+.messages-container {
+  height: 100%;
+
+  .send-message {
+    position: sticky;
+    bottom: 0;
+
+    emoji-mart {
+      display: none;
+
+      &.active {
+        display: initial;
+      }
+    }
+  }
+}

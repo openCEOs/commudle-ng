@@ -1,0 +1,60 @@
+<div *ngIf="message" class="message-container">
+  <div class="prefix d-flex align-items-start">
+    <div class="avatar">
+      <img alt="{{message.user.name}}" src="{{message.user.avatar}}" title="{{message.user.name}}">
+    </div>
+    <div class="user-container">
+      <div class="user d-flex align-items-center">
+        <p class="name">
+          <a [routerLink]="['/users', message.user.username]">{{message.user.name}}</a>
+        </p>
+        <img *ngIf="message.user.is_expert" alt="Expert Tick" class="expert-icon" src="/assets/images/Expert-Tick.svg"
+             title="Expert Tick">
+      </div>
+      <p [nbTooltip]="moment(message.created_at).fromNow()" class="content">{{message.content}}</p>
+    </div>
+  </div>
+  <nb-actions *ngIf="currentUser" class="suffix" size="tiny">
+    <nb-action
+      *ngIf="permittedActions.includes(allActions.VOTE) && message.user.id !== currentUser.id && canVote && message.parent_type != 'UserMessage'">
+      <p *ngIf="message.votes_count > 0">{{message.votes_count}}&nbsp;</p>
+      <nb-icon (click)="emitVote(message.id)" class="clickable" icon="arrow-upward"
+               nbTooltip="Upvote this message"></nb-icon>
+    </nb-action>
+    <nb-action *ngIf="permittedActions.includes(allActions.ADD) && canReply">
+      <nb-icon (click)="showReplyForm = !showReplyForm" class="clickable" icon="undo-outline"
+               nbTooltip="Reply to this message"></nb-icon>
+    </nb-action>
+    <nb-action *ngIf="permittedActions.includes(allActions.DELETE) || message.user.id === currentUser.id">
+      <nb-icon (click)="emitDelete(message.id)" class="clickable" icon="trash-outline"
+               nbTooltip="Delete this message"></nb-icon>
+    </nb-action>
+    <nb-action *ngIf="permittedActions.includes(allActions.FLAG)">
+      <p *ngIf="message.flags_count > 0">{{message.flags_count}}&nbsp;</p>
+      <nb-icon (click)="emitFlag(message.id)" class="clickable" icon="flag-outline"
+               nbTooltip="Report this message (3 reports deletes it)"></nb-icon>
+    </nb-action>
+  </nb-actions>
+  <div *ngIf="canReply" class="replies">
+    <app-qna-list-item (sendDelete)="emitDelete($event)" (sendFlag)="emitFlag($event)" (sendVote)="emitVote($event)"
+                       *ngFor="let reply of message.user_messages" [allActions]="allActions" [canReply]="false"
+                       [canVote]="false" [currentUser]="currentUser" [message]="reply"
+                       [permittedActions]="permittedActions"></app-qna-list-item>
+    <div *ngIf="showReplyForm" class="reply-form">
+      <emoji-mart (emojiSelect)="addEmoji($event)" [ngClass]="{'active': showEmojiPicker}" [style]="{width: '100%'}"
+                  set="twitter" title="Select an emoji"></emoji-mart>
+      <form (submit)="emitReply()" [formGroup]="replyForm">
+        <nb-form-field>
+          <button (click)="showEmojiPicker = !showEmojiPicker" ghost nbButton nbPrefix size="tiny" type="button">
+            <nb-icon icon="grin" pack="far"></nb-icon>
+          </button>
+          <input fieldSize="tiny" formControlName="content" fullWidth maxlength="200" minlength="1" nbInput
+                 placeholder="Reply" type="text">
+          <button [disabled]="!replyForm.valid" ghost nbButton nbSuffix size="tiny">
+            <nb-icon icon="paper-plane"></nb-icon>
+          </button>
+        </nb-form-field>
+      </form>
+    </div>
+  </div>
+</div>

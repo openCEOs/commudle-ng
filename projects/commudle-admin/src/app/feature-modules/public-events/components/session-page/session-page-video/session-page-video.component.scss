@@ -1,0 +1,164 @@
+@import '/projects/commudle-admin/src/assets/styles/variables';
+
+.session-page-video {
+  margin-top: 0;
+  border: none;
+  border-radius: $border-10;
+  overflow: hidden;
+  height: calc(100vh - 56px - 16px - 16px);
+
+  &.internal-link {
+    background-color: $black;
+  }
+
+  &.external-link {
+    height: 150px;
+
+    nb-card-body {
+      .video-stream {
+        position: initial;
+        height: initial;
+      }
+    }
+  }
+
+  nb-card-body {
+    padding: 0;
+    height: inherit;
+
+    .fullscreen-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      border: none;
+      z-index: 1;
+      color: $white;
+      background-color: transparent;
+      transition: all 0.2s ease-in-out;
+
+      &:hover {
+        background-color: rgba($spanish-gray, 0.4);
+      }
+    }
+
+    .video-stream {
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+      height: min(calc(100vh - 56px - 16px - 16px), calc(100vw * 9 / 16));
+      width: 100%;
+      transition: width 0.7s ease-in-out;
+
+      @media all and (min-width: $tab-width) {
+        &.compressed {
+          width: calc(100% - 300px - 32px);
+        }
+      }
+    }
+
+    .user-interactions {
+      position: absolute;
+      right: 60px;
+      bottom: 8px;
+
+      button {
+        position: relative;
+        border: none;
+        height: 44px;
+        width: 44px;
+        margin: 0 $space-4;
+        padding: $space-12;
+        font-size: $fs-20;
+        font-weight: $fw-400;
+        color: $white;
+        background-color: transparent;
+        transition: all 0.2s ease-in-out;
+
+        &.active {
+          &::before {
+            content: '';
+            position: absolute;
+            bottom: 40px;
+            border-top: 12px solid $white;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+          }
+        }
+
+        &:hover {
+          background-color: rgba($spanish-gray, 0.4);
+        }
+
+        nb-badge {
+          display: none;
+
+          &.notification {
+            display: initial;
+          }
+        }
+
+        nb-icon {
+          margin: 0;
+        }
+      }
+    }
+
+    .session-page-window {
+      display: none;
+      position: absolute;
+      width: 328px;
+      right: 0;
+      top: 40px;
+      bottom: 44px;
+      margin: $space-16 $space-8;
+      background-color: $white;
+      border-radius: $border-4;
+      overflow: hidden;
+
+      &.open {
+        display: block;
+      }
+
+      .actions {
+        padding: $space-8;
+        box-shadow: rgba(17, 17, 26, 0.1) 0 0 16px;
+
+        .heading {
+          margin: 0;
+          font-weight: $fw-500;
+          color: $gunmetal;
+        }
+      }
+
+      app-session-page-details {
+        &::ng-deep {
+          nb-card {
+            border-radius: 0;
+            margin: $space-16 0 0;
+
+            nb-card-body {
+              padding: 0 $space-8 $space-8;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.fullscreen {
+    position: fixed;
+    margin: 0;
+    border-radius: 0;
+    height: 100vh;
+    width: 100vw;
+    top: 0;
+    left: 0;
+    z-index: 1050;
+  }
+}
+
+@media all and (max-width: $tab-width) {
+  .session-page-video {
+    height: calc(100vh - 56px - 16px - 16px - 44px);
+  }
+}

@@ -1,0 +1,113 @@
+@import '/projects/commudle-admin/src/assets/styles/variables';
+
+p {
+  margin: 0;
+  font-size: $fs-13;
+  line-height: 15px;
+  color: $gunmetal;
+}
+
+.message-container {
+  padding: $space-8 0 $space-8 $space-8;
+
+  .prefix {
+    width: 100%;
+
+    .avatar {
+      max-width: 32px;
+      min-width: 32px;
+      max-height: 32px;
+      overflow: hidden;
+      border-radius: $border-50;
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .user-container {
+      width: 100%;
+      margin-left: $space-8;
+
+      .user {
+        .name {
+          a {
+            text-decoration: none;
+            color: inherit;
+            font-weight: $fw-600;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+
+        .expert-icon {
+          margin-left: $space-4;
+          width: 12px;
+          height: 12px;
+        }
+      }
+
+      .content {
+        margin: $space-4 0;
+      }
+    }
+  }
+
+  .suffix {
+    margin-left: $space-32;
+
+    app-votes-display {
+      &::ng-deep {
+        .votes {
+          p {
+            height: 18px;
+            font-size: $fs-h6;
+
+            .count {
+              color: $spanish-gray;
+            }
+
+            nb-icon {
+              font-size: $fs-13;
+            }
+          }
+        }
+      }
+    }
+
+    nb-action {
+      border: none;
+      padding: 0 $space-8;
+
+      p {
+        margin-top: $space-1;
+        font-size: $fs-h6;
+        line-height: 14px;
+        color: $spanish-gray;
+      }
+
+      nb-icon {
+        font-size: $fs-13;
+      }
+    }
+  }
+
+  .replies {
+    margin-left: $space-32;
+
+    .reply-form {
+      margin-top: $space-8;
+
+      emoji-mart {
+        display: none;
+
+        &.active {
+          display: initial;
+        }
+      }
+    }
+  }
+}

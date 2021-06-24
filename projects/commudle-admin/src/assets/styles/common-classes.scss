@@ -9,10 +9,8 @@
 .page-padding {
   padding: $page-padding-top $page-horizontal-padding $page-padding-bottom;
 
-
   @media (max-width: $mobile-width) {
     padding: 0;
-
   }
 }
 
@@ -92,6 +90,14 @@
   align-items: flex-end;
 }
 
+.align-items-start {
+  align-items: flex-start;
+}
+
+.align-items-baseline {
+  align-items: baseline;
+}
+
 .flex-wrap {
   flex-wrap: wrap;
 }
@@ -139,8 +145,6 @@
   margin: 0 !important;
 }
 
-
-
 // animations
 .anim-shadow {
   transition: all 0.2s ease-in-out;
@@ -149,8 +153,6 @@
     box-shadow: rgba(149, 157, 165, 0.2) 0 8px 24px;
   }
 }
-
-
 
 // columns
 .three-col-large-column {

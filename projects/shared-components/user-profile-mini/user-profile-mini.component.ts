@@ -1,5 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {IUser} from 'projects/shared-models/user.model';
+import { Component, Input, OnInit } from '@angular/core';
+import { IUser } from 'projects/shared-models/user.model';
 
 @Component({
   selector: 'app-user-profile-mini',
@@ -7,6 +7,7 @@ import {IUser} from 'projects/shared-models/user.model';
   styleUrls: ['./user-profile-mini.component.scss']
 })
 export class UserProfileMiniComponent implements OnInit {
+
   @Input() user: IUser;
   @Input() size: string;
   @Input() designation: boolean;
@@ -17,4 +18,5 @@ export class UserProfileMiniComponent implements OnInit {
 
   ngOnInit() {
   }
+
 }

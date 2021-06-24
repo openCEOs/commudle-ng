@@ -37,7 +37,7 @@ export const API_ROUTES = {
     PUBLIC: {
       INDEX: 'api/v2/community_builds/public',
       SHOW: 'api/v2/community_builds/public/show',
-      TOGGLE_VOTE: 'api/v2/community_builds/public/toggle_vote',
+      TOGGLE_VOTE: 'api/v2/community_builds/public/toggle_vote'
     }
   },
 
@@ -78,7 +78,7 @@ export const API_ROUTES = {
     MANAGING_COMMUNITY_GROUPS: 'api/v2/community_groups/get_managing_community_groups',
     PUBLIC: {
       SHOW: 'api/v2/community_groups/public',
-      COMMUNITIES: 'api/v2/community_groups/public/communities',
+      COMMUNITIES: 'api/v2/community_groups/public/communities'
     }
   },
 
@@ -130,7 +130,8 @@ export const API_ROUTES = {
       VOLUNTEERS: 'api/v2/events/public/volunteers',
       INDEX_BY_COMMUNITY: 'api/v2/events/public/index_by_community',
       UPCOMING: 'api/v2/events/public/upcoming',
-      RANDOM_PAST: 'api/v2/events/public/past_random'
+      RANDOM_PAST: 'api/v2/events/public/past_random',
+      POLLS: 'api/v2/events/public/polls'
     }
   },
 
@@ -148,13 +149,13 @@ export const API_ROUTES = {
   },
 
   // event_simple_registrations
-  EVENT_SIMPLE_REGISTATIONS: {
+  EVENT_SIMPLE_REGISTRATIONS: {
     FIND_OR_CREATE: 'api/v2/event_simple_registrations/find_or_create',
     TOGGLE_STATUS: 'api/v2/event_simple_registrations/toggle_status',
     EMAIL_CSV: 'api/v2/event_simple_registrations/email_csv',
     CHANGE_BULK_REGISTRATION_STATUS: 'api/v2/event_simple_registrations/change_bulk_registration_status',
     PUBLIC: {
-      SHOW: 'api/v2/event_simple_registrations/public_show',
+      SHOW: 'api/v2/event_simple_registrations/public_show'
     }
   },
 
@@ -177,7 +178,7 @@ export const API_ROUTES = {
     INDEX: 'api/v2/data_form_entities/get_form_entities',
     SHOW: 'api/v2/data_form_entities',
     UPDATE_VISIBILITY: 'api/v2/data_form_entities/update_visibility',
-    EMAIL_CSV: 'api/v2/data_form_entities/email_csv',
+    EMAIL_CSV: 'api/v2/data_form_entities/email_csv'
   },
 
   // registration_statuses
@@ -237,10 +238,9 @@ export const API_ROUTES = {
       PAST_RANDOM_EVENTS: 'api/v2/home/public/past_random_events',
       LABS: 'api/v2/home/public/labs',
       COMMUNITY_BUILDS: 'api/v2/home/public/community_builds',
-      COMMUNITIES: 'api/v2/home/public/communities',
+      COMMUNITIES: 'api/v2/home/public/communities'
     }
   },
-
 
   MAIN_NEWSLETTERS: {
     CREATE: 'api/v2/main_newsletters',
@@ -272,7 +272,8 @@ export const API_ROUTES = {
     PUBLIC: {
       GET: 'api/v2/track_slots/public_show',
       TOGGLE_VOTE: 'api/v2/track_slots/public_toggle_vote',
-      LIVE_EVENT_SESSIONS: 'api/v2/track_slots/public_live_event_sessions'
+      LIVE_EVENT_SESSIONS: 'api/v2/track_slots/public_live_event_sessions',
+      POLLS: 'api/v2/track_slots/public/polls'
     }
   },
 
@@ -307,16 +308,12 @@ export const API_ROUTES = {
     PUBLIC_INDEX: 'api/v2/event_collaboration_communities/public_index'
   },
 
-
   EVENT_UPDATES: {
     INDEX: 'api/v2/event_updates',
     CREATE: 'api/v2/event_updates',
     DELETE: 'api/v2/event_updates',
     PUBLIC_INDEX: 'api/v2/event_updates/public_index'
   },
-
-
-
 
   USERS: {
     GET_PROFILE: 'api/v2/users',
@@ -422,7 +419,7 @@ export const API_ROUTES = {
       SHOW: 'api/v2/user_event_registrations/public_show',
       TOGGLE: 'api/v2/user_event_registrations/public_toggle',
       INTERESTED_MEMBERS: 'api/v2/user_event_registrations/public_event_interested_users',
-      SPEAKERS: 'api/v2/user_event_registrations/public_speakers',
+      SPEAKERS: 'api/v2/user_event_registrations/public_speakers'
     }
   },
 
@@ -435,7 +432,7 @@ export const API_ROUTES = {
 
   USER_OBJECT_VISITS: {
     CREATE: 'api/v2/user_object_visits',
-    MARK_END_TIME: 'api/v2/user_object_visits/mark_end_time',
+    MARK_END_TIME: 'api/v2/user_object_visits/mark_end_time'
   },
 
   VOTES: {
@@ -447,7 +444,7 @@ export const API_ROUTES = {
 
   FLAGS: {
     PUBLIC: {
-      COUNT: 'api/v2/flags/public/count',
+      COUNT: 'api/v2/flags/public/count'
     }
   },
 
@@ -469,14 +466,14 @@ export const API_ROUTES = {
       MEMBERS_DISTRIBUTION: 'api/v2/stats/communities/members_distribution',
       MEMBERS_TIMELINE: 'api/v2/stats/communities/members_timeline',
       EVENTS_TIMELINE: 'api/v2/stats/communities/events_timeline',
-      EMAILS: 'api/v2/stats/communities/emails',
+      EMAILS: 'api/v2/stats/communities/emails'
     },
     LABS: {
-      USER_ENGAGEMENT: 'api/v2/stats/labs/user_engagement',
+      USER_ENGAGEMENT: 'api/v2/stats/labs/user_engagement'
     },
     COMMUNITY_BUILDS: {
-      USER_ENGAGEMENT: 'api/v2/stats/community_builds/user_engagement',
-    },
+      USER_ENGAGEMENT: 'api/v2/stats/community_builds/user_engagement'
+    }
   },
 
   TAGS: {

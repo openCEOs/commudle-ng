@@ -31,9 +31,6 @@
             "styles": [
               "projects/commudle-admin/src/styles.scss",
               "./node_modules/@fortawesome/fontawesome-free/css/all.css"
-            ],
-            "scripts": [
-              "projects/commudle-admin/src/assets/scripts/jitsi-meet.js"
             ]
           },
           "configurations": {

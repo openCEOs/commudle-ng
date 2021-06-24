@@ -1,0 +1,10 @@
+<nb-list class="session-page-viewers">
+  <nb-list-item *ngFor="let user of usersList">
+    <app-user-profile-mini [designation]="true" [showLiveStatus]="true" [user]="user"
+                           size="small"></app-user-profile-mini>
+    <button (click)="inviteToStage(user.id)" *ngIf="embeddedVideoStream.hms_room_id && isAdmin && activeEvent"
+            class="invite-to-stage" ghost nbButton nbTooltip="Invite to stage" size="small" status="info">
+      <nb-icon icon="plus"></nb-icon>
+    </button>
+  </nb-list-item>
+</nb-list>

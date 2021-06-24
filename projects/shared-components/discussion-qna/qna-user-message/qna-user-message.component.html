@@ -6,12 +6,8 @@
     <div class="content-controls">
       <div class="author-details">
         <p>
-          <strong>
-            {{ message.user.name }}
-          </strong>
-          <small>
-            {{ moment(message.created_at).fromNow() }}
-          </small>
+          {{ message.user.name }}
+          <small>{{ moment(message.created_at).fromNow() }}</small>
         </p>
       </div>
       <div>
@@ -43,9 +39,11 @@
       </div>
     </div>
     <div (click)="canVote && this.login() && permittedActions.includes(allActions.VOTE) && emitVote(message.id)"
-         *ngIf="message.parent_type != 'UserMessage'" class="votes clickable" nbTooltip="Upvote" nbTooltipStatus="info">
+         *ngIf="message.parent_type != 'UserMessage'"
+         class="votes clickable"
+         nbTooltip="Upvote" nbTooltipStatus="info">
       <p
-        [ngClass]="{'low' : (message.votes_count > 0 && message.votes_count <= 2), 'medium': (message.votes_count > 2 && message.votes_count <= 4), 'high': (message.votes_count > 4)}">
+        [ngClass]="{'low' : message.votes_count > 0 && message.votes_count <= 2, 'medium': message.votes_count > 2 && message.votes_count <= 4, 'high': message.votes_count > 4}">
         <nb-icon icon="arrow-upward" status="info"></nb-icon>
         {{ message.votes_count > 0 ? message.votes_count : '' }}
       </p>
@@ -59,7 +57,6 @@
                             [currentUser]="currentUser" [message]="rep"
                             [permittedActions]="permittedActions"></app-qna-user-message>
     </div>
-
     <div *ngIf="showReplyForm" class="reply-form">
       <form (ngSubmit)="emitReply()" *ngIf="canReply" [formGroup]="userMessageReplyForm">
         <input fieldSize="tiny" formControlName="content" fullWidth nbInput placeholder="Reply (max 200 characters)"

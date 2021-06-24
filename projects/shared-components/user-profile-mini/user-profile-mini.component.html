@@ -5,13 +5,13 @@
   </div>
   <div class="profile-info">
     <p class="name {{ size }} d-flex">
-      <strong>{{ user.name }}</strong>
+      <a [routerLink]="['/users', user.username]"><strong>{{ user.name }}</strong></a>
       <img *ngIf="user.is_expert" alt="Expert Tick" class="expert-icon" src="/assets/images/Expert-Tick.svg"
            title="Expert Tick">
     </p>
     <p *ngIf="designation" class="designation {{ size }}">
       {{ user.designation | slice:0:50 }}
-      <span *ngIf="user.designation && user.designation.length > 25">...</span>
+      <span *ngIf="user.designation?.length > 25">...</span>
     </p>
   </div>
 </div>

@@ -1,15 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { YouTubePlayerModule } from '@angular/youtube-player';
+import { PickerModule } from '@ctrl/ngx-emoji-mart';
 import {
   NbAccordionModule,
+  NbActionsModule,
   NbAlertModule,
   NbBadgeModule,
   NbButtonModule,
   NbCardModule,
   NbCheckboxModule,
+  NbFormFieldModule,
   NbIconModule,
   NbInputModule,
   NbListModule,
@@ -21,6 +24,9 @@ import {
   NbWindowModule
 } from '@nebular/theme';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { MessageComponent } from 'projects/shared-components/messages/messages-list/message/message.component';
+import { MessagesListComponent } from 'projects/shared-components/messages/messages-list/messages-list.component';
+import { MessagesComponent } from 'projects/shared-components/messages/messages.component';
 import { HmsVideoModule } from 'projects/shared-modules/hms-video/hms-video.module';
 import { SharedPipesModule } from 'projects/shared-pipes/pipes.module';
 import { BadgeComponent } from './badge/badge.component';
@@ -46,6 +52,9 @@ import { PollsComponent } from './polls/polls.component';
 import { UserProfileCardLargeComponent } from './profile-cards/user-profile-card-large/user-profile-card-large.component';
 import { UserProfileCardMediumComponent } from './profile-cards/user-profile-card-medium/user-profile-card-medium.component';
 import { UserProfileCardSmallComponent } from './profile-cards/user-profile-card-small/user-profile-card-small.component';
+import { QnaListItemComponent } from './qna/qna-list/qna-list-item/qna-list-item.component';
+import { QnaListComponent } from './qna/qna-list/qna-list.component';
+import { QnaComponent } from './qna/qna.component';
 import { TagComponent } from './tag/tag.component';
 import { UserLiveStatusComponent } from './user-live-status/user-live-status.component';
 import { UserObjectVisitPixelComponent } from './user-object-visit-pixel/user-object-visit-pixel.component';
@@ -92,16 +101,24 @@ import { WorkInProgressComponent } from './work-in-progress/work-in-progress.com
     FlagsDisplayComponent,
     UserProfileCardLargeComponent,
     UserProfileCardMediumComponent,
-    UserProfileCardSmallComponent
+    UserProfileCardSmallComponent,
+    MessagesComponent,
+    MessagesListComponent,
+    MessageComponent,
+    QnaComponent,
+    QnaListComponent,
+    QnaListItemComponent
   ],
   imports: [
     CommonModule,
     RouterModule,
+    FormsModule,
     ReactiveFormsModule,
     YouTubePlayerModule,
     SharedPipesModule,
     NgxDatatableModule,
     HmsVideoModule,
+    PickerModule,
 
     // Nebular
     NbButtonModule,
@@ -118,7 +135,9 @@ import { WorkInProgressComponent } from './work-in-progress/work-in-progress.com
     NbPopoverModule,
     NbListModule,
     NbAlertModule,
-    NbTagModule
+    NbTagModule,
+    NbActionsModule,
+    NbFormFieldModule
   ],
   exports: [
     WorkInProgressComponent,
@@ -146,7 +165,9 @@ import { WorkInProgressComponent } from './work-in-progress/work-in-progress.com
     FlagsDisplayComponent,
     UserProfileCardLargeComponent,
     UserProfileCardMediumComponent,
-    UserProfileCardSmallComponent
+    UserProfileCardSmallComponent,
+    MessagesComponent,
+    QnaComponent
   ]
 })
 export class SharedComponentsModule {

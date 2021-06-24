@@ -1,0 +1,27 @@
+@import '/projects/commudle-admin/src/assets/styles/variables';
+
+.session-page-poll {
+  height: 100%;
+  overflow: auto;
+  padding: 0 $space-8;
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: darken($light-purple, 5%);
+    border-radius: $border-10;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: darken($light-purple, 8%);
+  }
+}

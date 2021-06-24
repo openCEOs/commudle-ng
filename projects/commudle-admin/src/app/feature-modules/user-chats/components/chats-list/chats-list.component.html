@@ -1,19 +1,17 @@
 <nb-card class="chats-list">
   <nb-card-header (click)="toggleChatsListHeight()" class="clickable chats-list-header">
-    <p>
-      <nb-icon icon="message-circle-outline"></nb-icon>
-      <span>&nbsp;Messages</span>
-    </p>
-    <app-badge *ngIf="unreadCount > 0 && chatsListHeight === 0" [fontSize]="'small'"
-               [color]="'#3b9bdf'" [text]="unreadCount + ' New'"></app-badge>
+    <nb-icon [icon]="chatsListHeight > 0 ? 'close' : 'message-square-outline'"
+             [nbTooltip]="chatsListHeight > 0 ? 'Close' : 'Open' + ' Inbox'"></nb-icon>
+    <app-badge *ngIf="unreadCount > 0 && chatsListHeight === 0" [color]="'#3b9bdf'" [fontSize]="'small'"
+               [text]="unreadCount + ' New'"></app-badge>
   </nb-card-header>
   <nb-card-body [style.maxHeight.vh]="chatsListHeight" [style.width.px]="chatsListWidth" class="chats-list-body">
     <nb-list>
       <nb-list-item (click)="openChat(chatUser)" *ngFor="let chatUser of allPersonalChatUsers" class="clickable">
         <app-user-profile-mini [showLiveStatus]="showLiveStatus" [size]="'small'"
                                [user]="chatUser.user"></app-user-profile-mini>
-        <app-badge *ngIf="currentUser && chatUser.unread_user_ids.includes(currentUser.id)"
-                   [color]="'#ff5c1e'" [fontSize]="'small'" [text]="'Unread'"></app-badge>
+        <app-badge *ngIf="currentUser && chatUser.unread_user_ids.includes(currentUser.id)" [color]="'#ff5c1e'"
+                   [fontSize]="'small'" [text]="'Unread'"></app-badge>
       </nb-list-item>
     </nb-list>
   </nb-card-body>

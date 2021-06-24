@@ -1,56 +1,41 @@
 <div class="video-player-container">
-  <div class="video-player" *ngIf="isBrowser">
-    <p class="filler" *ngIf="!started || !currentUser">
+  <div *ngIf="isBrowser" class="video-player">
+    <p *ngIf="!started || !currentUser" class="filler">
       <nb-icon icon="video"></nb-icon>
       <br/>
       <span> {{ fillerText }} </span>
     </p>
 
-    <div class="youtube-player" *ngIf="currentUser && started">
-      <app-hms-video
-        *ngIf="(videoSource == EEmbeddedVideoStreamSources.COMMUDLE) && hmsRoomId"
-        [roomId]="hmsRoomId">
-      </app-hms-video>
+    <div *ngIf="currentUser && started" class="youtube-player">
+      <app-hms-video *ngIf="(videoSource == EEmbeddedVideoStreamSources.COMMUDLE) && hmsRoomId"
+                     [roomId]="hmsRoomId"></app-hms-video>
 
-      <youtube-player
-        *ngIf="videoSource == EEmbeddedVideoStreamSources.YOUTUBE"
-        videoId="{{ playerUrl }}"
-        [width]="width || 640"
-        [height]="height || 360"
-      >
-      </youtube-player>
-      <div class="jitsi-player" *ngIf="(videoSource == EEmbeddedVideoStreamSources.JITSI_MEET)">
-        <div #jitsimeet class="jitsiVideo"></div>
-      </div>
+      <youtube-player *ngIf="videoSource == EEmbeddedVideoStreamSources.YOUTUBE" [height]="height || 360"
+                      [width]="width || 640" videoId="{{ playerUrl }}"></youtube-player>
 
-      <div class="external-link" *ngIf="(videoSource == EEmbeddedVideoStreamSources.EXTERNAL_LINK)">
-        <p *ngIf="playerUrl != ''">
-        <a class="text-info" href="{{playerUrl}}" target="_blank">
-          <nb-icon class="video-outline" icon="video-outline"></nb-icon>
-          <br>
-          <span>
-            Click Here To Access
-          </span>
-          <br>
-          <small><nb-icon icon="external-link"></nb-icon> {{ playerUrl }}</small>
-        </a>
+      <div *ngIf="videoSource == EEmbeddedVideoStreamSources.EXTERNAL_LINK" class="external-link">
+        <p *ngIf="playerUrl !== ''">
+          <a class="text-info" href="{{playerUrl}}" target="_blank">
+            <nb-icon class="video-outline" icon="video-outline"></nb-icon>
+            <br>
+            <span>Click Here To Access</span>
+            <br>
+            <small>
+              <nb-icon icon="external-link"></nb-icon>
+              {{ playerUrl }}
+            </small>
+          </a>
         </p>
       </div>
 
       <div *ngIf="(videoSource == EEmbeddedVideoStreamSources.ZOOM) && zoomSignature">
-        <iframe
-          [src]="this.playerUrl"
-          allow="camera; microphone"
-          frameborder="0"
-          [width]="width || 640"
-          [height]="height || 360">
-        </iframe>
+        <iframe [height]="height || 360" [src]="this.playerUrl" [width]="width || 640" allow="camera; microphone"
+                frameborder="0"></iframe>
       </div>
 
       <div *ngIf="(videoSource == EEmbeddedVideoStreamSources.OTHER)">
         <div [innerHTML]="playerUrl"></div>
       </div>
     </div>
-
   </div>
 </div>

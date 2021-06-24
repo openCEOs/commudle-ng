@@ -1,7 +1,10 @@
+@import '/projects/commudle-admin/src/assets/styles/variables';
+
 :host {
   height: 100%;
   width: 100%;
   position: relative;
+
   .conference {
     position: relative;
     height: 100%;
@@ -11,7 +14,6 @@
     .screen-video {
       width: 80%;
       height: 90%;
-
     }
 
     .user-videos {
@@ -25,6 +27,7 @@
       align-content: center;
       overflow-y: auto;
       transition: all 0.5s ease-in-out;
+
       .video {
         min-width: 300px;
         // display: flex;
@@ -34,9 +37,7 @@
         height: 100%;
       }
 
-
       &.max-one {
-
         .video {
           height: 100%;
           width: 100%;
@@ -45,7 +46,6 @@
       }
 
       &.max-four {
-
         .video {
           height: 50%;
           width: 50%;
@@ -65,6 +65,7 @@
         flex-direction: column;
         flex-wrap: nowrap;
         width: 20%;
+
         .video {
           height: 200px;
           width: 100%;
@@ -76,8 +77,20 @@
       position: absolute;
       bottom: 5px;
       width: 100%;
-      >div {
+
+      > div {
         margin: 5px;
+      }
+
+      button {
+        border: none;
+        color: $white;
+        background-color: transparent;
+        transition: all 0.2s ease-in-out;
+
+        &:hover {
+          background-color: rgba($spanish-gray, 0.4);
+        }
       }
 
       .end-meeting {

@@ -1,0 +1,16 @@
+<div class="session-page-container">
+  <div *ngIf="embeddedVideoStream" class="session-page">
+    <app-session-page-video [chat]="chat" [community]="community" [currentUser]="currentUser"
+                            [embeddedVideoStream]="embeddedVideoStream" [endTime]="endTime" [event]="event"
+                            [pollableId]="pollableId" [pollableType]="pollableType" [qna]="discussion"
+                            [speaker]="speaker" [startTime]="startTime" [trackSlot]="trackSlot" [userRoles]="userRoles"
+                            [userVisitData]="userVisitData"></app-session-page-video>
+    <app-session-page-details *ngIf="!['commudle', 'youtube'].includes(embeddedVideoStream.source)"
+                              [community]="community" [endTime]="endTime" [event]="event" [speaker]="speaker"
+                              [startTime]="startTime" [trackSlot]="trackSlot"
+                              [userVisitData]="userVisitData"></app-session-page-details>
+
+    <app-auto-attendance *ngIf="moment().isBetween(moment(event?.start_time), moment(event?.end_time))"
+                         [eventId]="event.id"></app-auto-attendance>
+  </div>
+</div>

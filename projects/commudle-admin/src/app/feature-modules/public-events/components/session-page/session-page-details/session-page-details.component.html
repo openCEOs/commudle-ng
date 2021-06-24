@@ -1,0 +1,31 @@
+<nb-card class="session-page-details">
+  <nb-card-body>
+    <p *ngIf="moment().isBetween(moment(startTime), moment(endTime))">
+      <span class="text-success">
+        <nb-icon icon="flash"></nb-icon>
+        Live Now!
+      </span>
+      <small>
+        {{ moment(startTime).format('dddd Do MMM, YYYY h:mm A') }}
+        -
+        {{ moment(endTime).format('h:mm A') }}
+      </small>
+    </p>
+    <p *ngIf="userVisitData?.visiting_users_count > 0">{{userVisitData.visiting_users_count}} watching now!</p>
+    <h5 class="event-name">
+      <a [routerLink]="['/communities', community.slug, 'events', event.slug]" class="event">{{event.name}}</a>
+      <span *ngIf="trackSlot"> | {{trackSlot.session_title}}</span>
+    </h5>
+    <div class="session-host d-flex align-items-center">
+      <div *ngIf="speaker">
+        <app-user-profile-card-small [user]="speaker"></app-user-profile-card-small>
+      </div>
+      <a [routerLink]="['/communities', community.slug]" class="community d-flex align-items-center">
+        <div class="community-logo d-flex align-items-center">
+          <img alt="{{community.name}}" src="{{community.logo_path}}">
+        </div>
+        <div class="community-name">{{community.name | truncatetext:35}}</div>
+      </a>
+    </div>
+  </nb-card-body>
+</nb-card>

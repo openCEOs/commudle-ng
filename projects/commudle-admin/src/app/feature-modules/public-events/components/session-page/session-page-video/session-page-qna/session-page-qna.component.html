@@ -1,0 +1,3 @@
+<div *ngIf="qna" class="session-page-qna">
+  <app-qna (newMessage)="newQnaNotification()" [discussion]="qna"></app-qna>
+</div>

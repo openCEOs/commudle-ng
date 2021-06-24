@@ -1,0 +1,16 @@
+<div class="qna-list-container">
+  <button (click)="getPreviousMessages.emit()" *ngIf="showMessagesLoader" fullWidth ghost nbButton size="small">
+    Load Previous Messages
+  </button>
+  <div #messagesList (scroll)="onScroll()" [ngClass]="{'compressed': showMessagesLoader}" class="qna-list">
+    <app-qna-list-item #message (sendDelete)="emitDelete($event)" (sendFlag)="emitFlag($event)"
+                       (sendReply)="emitReply(message.id, $event)" (sendVote)="emitVote($event)"
+                       *ngFor="let message of messages" [allActions]="allActions" [canReply]="true" [canVote]="true"
+                       [currentUser]="currentUser" [message]="message"
+                       [permittedActions]="permittedActions"></app-qna-list-item>
+  </div>
+  <button (click)="scrollToBottom()" *ngIf="messageContainer && !isUserNearBottom()" class="new-qna-btn" nbButton
+          shape="round" size="small" status="info">
+    <nb-icon icon="arrow-downward"></nb-icon>
+  </button>
+</div>

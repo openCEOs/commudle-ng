@@ -17,6 +17,7 @@ import {
   NbUserModule
 } from '@nebular/theme';
 import { SharedComponentsModule } from 'projects/shared-components/shared-components.module';
+import { SharedPipesModule } from 'projects/shared-pipes/pipes.module';
 import { AgendaComponent } from './components/agenda/agenda.component';
 import { EventLocationTracksComponent } from './components/agenda/event-location-tracks/event-location-tracks.component';
 import { AttendingMembersComponent } from './components/attending-members/attending-members.component';
@@ -27,6 +28,13 @@ import { EventUpdatesComponent } from './components/event-updates/event-updates.
 import { HighlightedLinksComponent } from './components/highlighted-links/highlighted-links.component';
 import { HomeEventComponent } from './components/home-event/home-event.component';
 import { LiveSessionsComponent } from './components/live-sessions/live-sessions.component';
+import { SessionPageDetailsComponent } from './components/session-page/session-page-details/session-page-details.component';
+import { SessionPageChatComponent } from './components/session-page/session-page-video/session-page-chat/session-page-chat.component';
+import { SessionPagePollComponent } from './components/session-page/session-page-video/session-page-poll/session-page-poll.component';
+import { SessionPageQnaComponent } from './components/session-page/session-page-video/session-page-qna/session-page-qna.component';
+import { SessionPageVideoComponent } from './components/session-page/session-page-video/session-page-video.component';
+import { SessionPageViewersComponent } from './components/session-page/session-page-video/session-page-viewers/session-page-viewers.component';
+import { SessionPageComponent } from './components/session-page/session-page.component';
 import { SpeakerSessionPageComponent } from './components/speaker-session-page/speaker-session-page.component';
 import { UsersListComponent } from './components/speaker-session-page/users-list/users-list.component';
 import { SpeakersComponent } from './components/speakers/speakers.component';
@@ -50,7 +58,14 @@ import { PublicEventsRoutingModule } from './public-events-routing.module';
     AttendingMembersComponent,
     AutoAttendanceComponent,
     SponsorsComponent,
-    UsersListComponent
+    UsersListComponent,
+    SessionPageComponent,
+    SessionPageDetailsComponent,
+    SessionPageVideoComponent,
+    SessionPageChatComponent,
+    SessionPageQnaComponent,
+    SessionPagePollComponent,
+    SessionPageViewersComponent
   ],
   imports: [
     CommonModule,
@@ -58,6 +73,7 @@ import { PublicEventsRoutingModule } from './public-events-routing.module';
     FormsModule,
     ReactiveFormsModule,
     SharedComponentsModule,
+    SharedPipesModule,
 
     // Nebular
     NbCardModule,

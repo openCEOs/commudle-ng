@@ -1,15 +1,14 @@
-import { HMSClient } from '@100mslive/hmsvideo-web';
-import { Component, Input, OnInit, OnDestroy, TemplateRef, Inject } from '@angular/core';
-import { LibAuthwatchService } from 'projects/shared-services/lib-authwatch.service';
-import { ICurrentUser } from 'projects/shared-models/current_user.model';
-import { LocalmediaService } from '../../services/localmedia.service';
-import { combineLatest } from 'rxjs';
-import { HmsLiveChannel } from '../../services/websockets/hms-live.channel';
-import { IHmsClient } from 'projects/shared-modules/hms-video/models/hms-client.model';
-import { EHmsRoles } from '../enums/hms-roles.enum';
-import { EHmsStates, HmsVideoStateService } from '../../services/hms-video-state.service';
+import { Component, Input, OnDestroy, OnInit, TemplateRef } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
+import { ICurrentUser } from 'projects/shared-models/current_user.model';
+import { IHmsClient } from 'projects/shared-modules/hms-video/models/hms-client.model';
+import { LibAuthwatchService } from 'projects/shared-services/lib-authwatch.service';
+import { combineLatest } from 'rxjs';
 import { HmsClientManagerService } from '../../services/hms-client-manager.service';
+import { EHmsStates, HmsVideoStateService } from '../../services/hms-video-state.service';
+import { LocalmediaService } from '../../services/localmedia.service';
+import { HmsLiveChannel } from '../../services/websockets/hms-live.channel';
+import { EHmsRoles } from '../enums/hms-roles.enum';
 
 @Component({
   selector: 'app-conference',
@@ -166,6 +165,7 @@ export class ConferenceComponent implements OnInit, OnDestroy {
       // detect temporary socket disconnections
       this.client.on('disconnected', () => {
         // probably reload the page
+        window.location.reload();
       });
     }
 

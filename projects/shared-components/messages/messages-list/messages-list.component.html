@@ -1,0 +1,15 @@
+<div class="messages-list-container">
+  <button (click)="getPreviousMessages.emit()" *ngIf="showMessagesLoader" fullWidth ghost nbButton size="small">
+    Load Previous Messages
+  </button>
+  <div #messagesList (scroll)="onScroll()" [ngClass]="{'compressed': showMessagesLoader}" class="messages-list">
+    <app-message #message (sendDelete)="emitDelete($event)" (sendFlag)="emitFlag($event)"
+                 (sendReply)="emitReply(message.id, $event)" *ngFor="let message of messages" [allActions]="allActions"
+                 [canReply]="true" [currentUser]="currentUser" [message]="message"
+                 [permittedActions]="permittedActions"></app-message>
+  </div>
+  <button (click)="scrollToBottom()" *ngIf="messageContainer && !isUserNearBottom()" class="new-message-btn" nbButton
+          shape="round" size="small" status="info">
+    <nb-icon icon="arrow-downward"></nb-icon>
+  </button>
+</div>

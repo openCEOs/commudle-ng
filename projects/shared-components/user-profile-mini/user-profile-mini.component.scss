@@ -61,6 +61,15 @@
     .name {
       margin: 0;
 
+      a {
+        text-decoration: none;
+        color: inherit;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
       &.medium {
         font-size: 1.2rem;
       }
@@ -79,7 +88,7 @@
     }
 
     .designation {
-      margin: 0;
+      margin: $space-4 0 0;
       font-size: 0.8rem;
       color: grey;
 

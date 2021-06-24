@@ -1,0 +1,29 @@
+<div *ngIf="currentUser" class="qna-container">
+  <nb-select (selectedChange)="sortMessages($event)" class="sort-messages-btn" placeholder="Sort" size="tiny">
+    <nb-option [value]="'newest'">Newest First</nb-option>
+    <nb-option [value]="'oldest'">Oldest First</nb-option>
+    <nb-option [value]="'votes'">Highest Votes</nb-option>
+  </nb-select>
+  <app-qna-list (getPreviousMessages)="getDiscussionMessages()" (sendDelete)="sendDelete($event)"
+                (sendFlag)="sendFlag($event)" (sendReply)="sendReply($event)" (sendVote)="sendVote($event)"
+                [allActions]="allActions" [currentUser]="currentUser" [messages]="messages"
+                [permittedActions]="permittedActions" [showMessagesLoader]="showMessagesLoader"></app-qna-list>
+  <div class="send-message">
+    <emoji-mart (emojiSelect)="addEmoji($event)" [ngClass]="{'active': showEmojiPicker}" [style]="{width: '100%'}"
+                set="twitter" title="Select an emoji"></emoji-mart>
+    <form (submit)="sendMessage()" *ngIf="permittedActions.includes(allActions.ADD)" [formGroup]="messageForm">
+      <nb-form-field>
+        <button (click)="showEmojiPicker = !showEmojiPicker" ghost nbButton nbPrefix type="button">
+          <nb-icon icon="grin" pack="far"></nb-icon>
+        </button>
+        <input #messageInput formControlName="content" fullWidth maxlength="200" minlength="1" nbInput
+               placeholder="Ask a question, live!" type="text">
+        <button [disabled]="!messageForm.valid" ghost nbButton nbSuffix>
+          <nb-icon icon="paper-plane"></nb-icon>
+        </button>
+      </nb-form-field>
+    </form>
+  </div>
+</div>
+
+<!-- TODO: Should there be rules for QnA? -->

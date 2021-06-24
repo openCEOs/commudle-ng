@@ -1,11 +1,12 @@
-import { Component, OnInit, Input, ViewChild, TemplateRef, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { NbWindowService } from '@nebular/theme';
+import { EventsService } from 'projects/commudle-admin/src/app/services/events.service';
+import { TrackSlotsService } from 'projects/commudle-admin/src/app/services/track_slots.service';
+import { ICurrentUser } from 'projects/shared-models/current_user.model';
+import { EPollStatuses, IPoll } from 'projects/shared-models/poll.model';
+import { LibAuthwatchService } from 'projects/shared-services/lib-authwatch.service';
 import { LibToastLogService } from 'projects/shared-services/lib-toastlog.service';
 import { PollsChannel } from '../services/websockets/polls.channel';
-import { ICurrentUser } from 'projects/shared-models/current_user.model';
-import { LibAuthwatchService } from 'projects/shared-services/lib-authwatch.service';
-import { IPoll, EPollStatuses } from 'projects/shared-models/poll.model';
-import { NbWindowService } from '@nebular/theme';
-import { PollCreateFormComponent } from './poll-create-form/poll-create-form.component';
 
 @Component({
   selector: 'app-polls',
@@ -13,9 +14,9 @@ import { PollCreateFormComponent } from './poll-create-form/poll-create-form.com
   styleUrls: ['./polls.component.scss']
 })
 export class PollsComponent implements OnInit, OnDestroy {
+
   @ViewChild('newPollTemplate') newPollTemplate: TemplateRef<any>;
   @ViewChild('fillPollTemplate') fillPollTemplate: TemplateRef<any>;
-
 
   @Input() pollableId: number;
   @Input() pollableType: string;
@@ -34,9 +35,11 @@ export class PollsComponent implements OnInit, OnDestroy {
     private pollsChannel: PollsChannel,
     private toastLogService: LibToastLogService,
     private authWatchService: LibAuthwatchService,
-    private windowService: NbWindowService
-  ) { }
-
+    private windowService: NbWindowService,
+    private eventsService: EventsService,
+    private trackSlotsService: TrackSlotsService
+  ) {
+  }
 
   login() {
     if (!this.currentUser) {
@@ -46,30 +49,20 @@ export class PollsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.authWatchService.currentUser$.subscribe(
-      user => this.currentUser = user
-    );
+    this.authWatchService.currentUser$.subscribe(user => this.currentUser = user);
 
     this.allActions = this.pollsChannel.ACTIONS;
     this.pollsChannel.subscribe(this.pollableType, this.pollableId);
     this.receiveData();
   }
 
-
   ngOnDestroy(): void {
     this.pollsChannel.unsubscribe();
   }
 
   newPoll() {
-    this.windowRefCreatePoll = this.windowService.open(
-      this.newPollTemplate,
-      {
-        title: `New Poll`
-      }
-    );
+    this.windowRefCreatePoll = this.windowService.open(this.newPollTemplate, { title: `New Poll` });
   }
-
-
 
   receiveData() {
     this.pollsChannel.channelData$.subscribe(
@@ -78,14 +71,14 @@ export class PollsComponent implements OnInit, OnDestroy {
           switch (data.action) {
             case (this.pollsChannel.ACTIONS.SET_PERMISSIONS): {
               this.permittedActions = data.permitted_actions;
-              this.polls = data.polls;
+              this.getPolls();
               break;
             }
             case (this.pollsChannel.ACTIONS.CREATE): {
               if (this.windowRefCreatePoll) {
                 this.windowRefCreatePoll.close();
               }
-              let pollExists = this.polls.findIndex(p => p.id === data.poll.id);
+              const pollExists = this.polls.findIndex(p => p.id === data.poll.id);
               if (pollExists === -1) {
                 this.polls.unshift(data.poll);
               }
@@ -97,12 +90,7 @@ export class PollsComponent implements OnInit, OnDestroy {
                 this.polls[pollIndex].status = EPollStatuses.OPEN;
                 this.selectedPoll = data.poll;
                 if (this.currentUser && !this.polls[pollIndex].already_filled) {
-                  this.windowRefFillPoll = this.windowService.open(
-                    this.fillPollTemplate,
-                    {
-                      title: `Poll!`,
-                    }
-                  );
+                  this.windowRefFillPoll = this.windowService.open(this.fillPollTemplate, { title: `Poll!` });
                 }
               }
 
@@ -113,12 +101,7 @@ export class PollsComponent implements OnInit, OnDestroy {
               this.polls[pollIndex].status = EPollStatuses.OPEN;
               this.selectedPoll = data.poll;
               if (this.currentUser && !this.polls[pollIndex].already_filled) {
-                this.windowRefFillPoll = this.windowService.open(
-                  this.fillPollTemplate,
-                  {
-                    title: `Poll!`,
-                  }
-                );
+                this.windowRefFillPoll = this.windowService.open(this.fillPollTemplate, { title: `Poll!` });
               }
               break;
             }
@@ -152,6 +135,13 @@ export class PollsComponent implements OnInit, OnDestroy {
     );
   }
 
+  getPolls() {
+    if (this.pollableType === 'Event') {
+      this.eventsService.getPolls(this.pollableId).subscribe(value => this.polls = value.polls);
+    } else {
+      this.trackSlotsService.getPolls(this.pollableId).subscribe(value => this.polls = value.polls);
+    }
+  }
 
   create(pollData) {
     this.pollsChannel.sendData(
@@ -210,6 +200,5 @@ export class PollsComponent implements OnInit, OnDestroy {
       }
     );
   }
-
 
 }
