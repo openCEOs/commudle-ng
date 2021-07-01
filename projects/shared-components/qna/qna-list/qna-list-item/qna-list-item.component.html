@@ -13,14 +13,21 @@
       </div>
       <p [nbTooltip]="moment(message.created_at).fromNow()" class="content">{{message.content}}</p>
     </div>
+    <div
+      *ngIf="permittedActions.includes(allActions.VOTE) && message.user.id !== currentUser?.id && canVote && message.parent_type != 'UserMessage'"
+      class="upvote-btn d-flex align-items-center">
+      <p *ngIf="message.votes_count > 0">{{message.votes_count}}&nbsp;</p>
+      <nb-icon (click)="emitVote(message.id)" class="clickable" icon="arrow-upward" nbTooltip="Upvote this message"
+               status="info"></nb-icon>
+    </div>
   </div>
   <nb-actions *ngIf="currentUser" class="suffix" size="tiny">
-    <nb-action
-      *ngIf="permittedActions.includes(allActions.VOTE) && message.user.id !== currentUser.id && canVote && message.parent_type != 'UserMessage'">
-      <p *ngIf="message.votes_count > 0">{{message.votes_count}}&nbsp;</p>
-      <nb-icon (click)="emitVote(message.id)" class="clickable" icon="arrow-upward"
-               nbTooltip="Upvote this message"></nb-icon>
-    </nb-action>
+    <!--    <nb-action-->
+    <!--      *ngIf="permittedActions.includes(allActions.VOTE) && message.user.id !== currentUser.id && canVote && message.parent_type != 'UserMessage'">-->
+    <!--      <p *ngIf="message.votes_count > 0">{{message.votes_count}}&nbsp;</p>-->
+    <!--      <nb-icon (click)="emitVote(message.id)" class="clickable" icon="arrow-upward"-->
+    <!--               nbTooltip="Upvote this message"></nb-icon>-->
+    <!--    </nb-action>-->
     <nb-action *ngIf="permittedActions.includes(allActions.ADD) && canReply">
       <nb-icon (click)="showReplyForm = !showReplyForm" class="clickable" icon="undo-outline"
                nbTooltip="Reply to this message"></nb-icon>

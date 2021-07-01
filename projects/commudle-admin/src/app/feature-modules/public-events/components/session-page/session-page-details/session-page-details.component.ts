@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import * as moment from 'moment';
 import { ICommunity } from 'projects/shared-models/community.model';
 import { IEvent } from 'projects/shared-models/event.model';
@@ -19,6 +19,8 @@ export class SessionPageDetailsComponent implements OnInit {
   @Input() userVisitData;
   @Input() startTime: Date;
   @Input() endTime: Date;
+
+  @Output() openViewers: EventEmitter<any> = new EventEmitter<any>();
 
   moment = moment;
 

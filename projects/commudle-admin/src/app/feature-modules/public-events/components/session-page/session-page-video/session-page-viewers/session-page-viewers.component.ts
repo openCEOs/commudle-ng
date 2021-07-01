@@ -80,7 +80,6 @@ export class SessionPageViewersComponent implements OnInit, OnDestroy {
     }
   }
 
-
   getPastUsersList() {
     this.eventsService.embeddedVideoStreamPastVisitors(this.event.slug, this.embeddedVideoStream.id).subscribe(data => {
       this.usersList = data.users;

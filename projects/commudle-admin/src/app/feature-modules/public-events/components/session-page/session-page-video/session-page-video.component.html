@@ -50,18 +50,18 @@
     <div #interactionWindow class="session-page-window">
       <div class="actions d-flex align-items-center justify-content-space-between">
         <p class="heading">Session Details</p>
-        <button (click)="toggleInteractionWindow(0)" ghost nbButton nbTooltip="Close" shape="round" size="small">
+        <button (click)="toggleInteractionWindow(0)" ghost nbButton shape="round" size="small">
           <nb-icon icon="close"></nb-icon>
         </button>
       </div>
-      <app-session-page-details [community]="community" [endTime]="endTime" [event]="event" [speaker]="speaker"
-                                [startTime]="startTime" [trackSlot]="trackSlot"
+      <app-session-page-details (openViewers)="toggleInteractionWindow(1)" [community]="community" [endTime]="endTime"
+                                [event]="event" [speaker]="speaker" [startTime]="startTime" [trackSlot]="trackSlot"
                                 [userVisitData]="userVisitData"></app-session-page-details>
     </div>
     <div #interactionWindow class="session-page-window">
       <div class="actions d-flex align-items-center justify-content-space-between">
         <p class="heading">People attending the Session</p>
-        <button (click)="toggleInteractionWindow(1)" ghost nbButton nbTooltip="Close" shape="round" size="small">
+        <button (click)="toggleInteractionWindow(1)" ghost nbButton shape="round" size="small">
           <nb-icon icon="close"></nb-icon>
         </button>
       </div>
@@ -74,7 +74,7 @@
     <div #interactionWindow class="session-page-window">
       <div class="actions d-flex align-items-center justify-content-space-between">
         <p class="heading">Chat with other Viewers</p>
-        <button (click)="toggleInteractionWindow(0)" ghost nbButton nbTooltip="Close" shape="round" size="small">
+        <button (click)="toggleInteractionWindow(2)" ghost nbButton shape="round" size="small">
           <nb-icon icon="close"></nb-icon>
         </button>
       </div>
@@ -84,7 +84,7 @@
     <div #interactionWindow class="session-page-window">
       <div class="actions d-flex align-items-center justify-content-space-between">
         <p class="heading">Ask a Question</p>
-        <button (click)="toggleInteractionWindow(0)" ghost nbButton nbTooltip="Close" shape="round" size="small">
+        <button (click)="toggleInteractionWindow(3)" ghost nbButton shape="round" size="small">
           <nb-icon icon="close"></nb-icon>
         </button>
       </div>
@@ -93,7 +93,7 @@
     <div #interactionWindow class="session-page-window">
       <div class="actions d-flex align-items-center justify-content-space-between">
         <p class="heading">Participate in Polls</p>
-        <button (click)="toggleInteractionWindow(0)" ghost nbButton nbTooltip="Close" shape="round" size="small">
+        <button (click)="toggleInteractionWindow(4)" ghost nbButton shape="round" size="small">
           <nb-icon icon="close"></nb-icon>
         </button>
       </div>

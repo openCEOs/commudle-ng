@@ -1,14 +1,10 @@
 <div class="conference">
   <div *ngIf="screenShareStream" class="screen-video">
-    <app-user-video
-      (mutePeer)="mutePeer(streams[screenShareStream].uid)"
-      (removeFromStage)="removePeerFromStage(streams[screenShareStream].uid)"
-      [overridable]="serverClient.role === EHmsRoles.HOST"
-      [self]="false"
-      [stream]="streams[screenShareStream].stream"
-      [type]="'screenshare'"
-      [userDetails]="(peers[streams[screenShareStream].uid] ? peers[streams[screenShareStream].uid].user : {})"
-    ></app-user-video>
+    <app-user-video (mutePeer)="mutePeer(streams[screenShareStream].uid)"
+                    (removeFromStage)="removePeerFromStage(streams[screenShareStream].uid)"
+                    [overridable]="serverClient.role === EHmsRoles.HOST" [self]="false"
+                    [stream]="streams[screenShareStream].stream" [type]="'screenshare'"
+                    [userDetails]="peers[streams[screenShareStream].uid] ? peers[streams[screenShareStream].uid].user : {}"></app-user-video>
   </div>
   <div
     [ngClass]="{'max-one': numVids === 1, 'max-four': numVids > 1 && numVids <= 4, 'more-than-four': numVids > 4, 'vertical': screenShareStream != null}"
@@ -20,8 +16,7 @@
       ></app-user-video>
     <app-user-video *ngIf="localScreen" [stream]="localScreen"></app-user-video> -->
     <div *ngFor="let stream of streams | keyvalue"
-         [ngStyle]="{'display': screenShareStream !== stream.key ? 'unset' : 'none'}"
-         class="video">
+         [ngStyle]="{'display': screenShareStream !== stream.key ? 'unset' : 'none'}" class="video">
       <!-- show only non screen video elements here -->
       <app-user-video (mutePeer)="mutePeer(stream.value['uid'])"
                       (removeFromStage)="removePeerFromStage(stream.value['uid'])"
@@ -29,7 +24,6 @@
                       [self]="stream.value['uid'] === client.uid" [stream]="stream.value['stream']" [type]="'camera'"
                       [userDetails]="peers[stream.value['uid']] ? peers[stream.value['uid']].user : {}"></app-user-video>
     </div>
-
   </div>
   <!-- controls should be visible to the user if they are on the stage or if they are the host -->
   <div class="controls d-flex justify-content-center">
@@ -50,7 +44,7 @@
     </div>
     <div *ngIf="onStage" class="screen">
       <button (click)="toggleScreen()" [disabled]="screenShareStream && !screenShare"
-              [ngClass]="{'cursor-disabled': (screenShareStream && !screenShare) === true}" nbButton shape="round">
+              [ngClass]="{'cursor-disabled': screenShareStream && !screenShare}" nbButton shape="round">
         <nb-icon class="justify-content-center flex-column" icon="laptop" pack="fas"
                  status="{{localScreen ? 'success' : ''}}"></nb-icon>
       </button>
@@ -72,8 +66,7 @@
 
   <div *ngIf="showSettings" class="stream-settings">
     <app-settings (closeSettings)="this.showSettings = false" (joinStage)="toggleStage(); this.showSettings = false;"
-                  [invitation]="serverClient.role === EHmsRoles.VIEWER"
-                  [onStage]="onStage"></app-settings>
+                  [invitation]="serverClient.role === EHmsRoles.VIEWER" [onStage]="onStage"></app-settings>
   </div>
 </div>
 
@@ -89,6 +82,20 @@
     <nb-card-footer>
       <button (click)="endConference(); ref.close();" nbButton>Yes</button>
       <button (click)="ref.close()" nbButton>No</button>
+    </nb-card-footer>
+  </nb-card>
+</ng-template>
+
+<!-- dialog when user disconnects -->
+<ng-template #userDisconnectedAlert let-ref="dialogRef">
+  <nb-card>
+    <nb-card-header>User Disconnected</nb-card-header>
+    <nb-card-body>
+      <p>Due to unstable network, you have been disconnected from the session. Reload the page to continue?</p>
+    </nb-card-body>
+    <nb-card-footer class="d-flex justify-content-space-between">
+      <button (click)="ref.close(); location.reload();" nbButton size="small" status="success">Yes</button>
+      <button (click)="ref.close(); location.replace('/')" ghost nbButton size="tiny">Back to Home</button>
     </nb-card-footer>
   </nb-card>
 </ng-template>

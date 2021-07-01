@@ -1,8 +1,7 @@
-import { DOCUMENT, isPlatformBrowser, Location } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
+import { isPlatformBrowser, Location } from '@angular/common';
+import { Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { NbSidebarService } from '@nebular/theme';
 import * as moment from 'moment';
 import { CookieService } from 'ngx-cookie-service';
 import { AppUsersService } from 'projects/commudle-admin/src/app/services/app-users.service';
@@ -14,24 +13,23 @@ import { environment } from 'projects/commudle-admin/src/environments/environmen
 import { UserObjectVisitsService } from 'projects/shared-components/services/user-object-visits.service';
 import { ICommunity } from 'projects/shared-models/community.model';
 import { ICurrentUser } from 'projects/shared-models/current_user.model';
-import { IDataFormEntityResponseGroup } from 'projects/shared-models/data_form_entity_response_group.model';
 import { IDiscussion } from 'projects/shared-models/discussion.model';
 import { IEmbeddedVideoStream } from 'projects/shared-models/embedded_video_stream.model';
 import { EEventStatuses } from 'projects/shared-models/enums/event_statuses.enum';
 import { EUserRoles } from 'projects/shared-models/enums/user_roles.enum';
 import { IEvent } from 'projects/shared-models/event.model';
-import { ISpeakerResource } from 'projects/shared-models/speaker_resource.model';
 import { ITrackSlot } from 'projects/shared-models/track-slot.model';
 import { IUser } from 'projects/shared-models/user.model';
 import { LibAuthwatchService } from 'projects/shared-services/lib-authwatch.service';
 import { UserVisitsService } from 'projects/shared-services/user-visits.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-session-page',
   templateUrl: './session-page.component.html',
   styleUrls: ['./session-page.component.scss']
 })
-export class SessionPageComponent implements OnInit, AfterViewInit, OnDestroy {
+export class SessionPageComponent implements OnInit, OnDestroy {
 
   isBrowser: boolean = isPlatformBrowser(this.platformId);
 
@@ -41,22 +39,16 @@ export class SessionPageComponent implements OnInit, AfterViewInit, OnDestroy {
   community: ICommunity;
   event: IEvent;
 
-  dataFormEntityResponseGroup: IDataFormEntityResponseGroup;
-
   discussion: IDiscussion;
   chat: IDiscussion;
-  currentTab;
 
   pollableId: number;
   pollableType: string;
 
-  speakerResource: ISpeakerResource;
   embeddedVideoStream: IEmbeddedVideoStream;
 
   EEventStatuses = EEventStatuses;
   moment = moment;
-  playerWidth;
-  playerHeight;
 
   userVisitData;
 
@@ -64,19 +56,10 @@ export class SessionPageComponent implements OnInit, AfterViewInit, OnDestroy {
   endTime: Date;
 
   currentUser: ICurrentUser;
-  chatCount = 0;
-  questionCount = 0;
 
   userRoles = [];
-  subscriptions = [];
+  subscriptions: Subscription[] = [];
   EUserRoles = EUserRoles;
-
-  userCount = 0;
-  isFullscreen = false;
-
-  sidebarMinimize = false;
-
-  @ViewChild('videoContainer') private videoContainer: ElementRef;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -87,13 +70,11 @@ export class SessionPageComponent implements OnInit, AfterViewInit, OnDestroy {
     private meta: Meta,
     private userObjectVisitsService: UserObjectVisitsService,
     private authWatchService: LibAuthwatchService,
-    private nbSidebarService: NbSidebarService,
     private location: Location,
     private cookieService: CookieService,
     private usersService: AppUsersService,
     private userVisitsService: UserVisitsService,
     @Inject(PLATFORM_ID) private platformId: object,
-    @Inject(DOCUMENT) private document: Document,
     private footerService: FooterService
   ) {
   }
@@ -138,19 +119,12 @@ export class SessionPageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.document.onfullscreenchange = (event) => {
-      if (!this.document.fullscreenElement) {
-        this.isFullscreen = false;
-      }
-    };
-
     this.resolveData();
-    this.subscriptions.push(
-      this.authWatchService.currentUser$.subscribe(data => {
-        this.currentUser = data;
-        this.getMyRoles();
-      })
-    );
+
+    this.subscriptions.push(this.authWatchService.currentUser$.subscribe(data => {
+      this.currentUser = data;
+      this.getMyRoles();
+    }));
 
     this.subscriptions.push(this.userVisitsService.visitors$.subscribe(data => this.userVisitData = data));
 
@@ -159,19 +133,10 @@ export class SessionPageComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    for (const subs of this.subscriptions) {
-      subs.unsubscribe();
-    }
+    this.subscriptions.forEach(value => value.unsubscribe());
 
     // Show Footer
     this.footerService.changeFooterStatus(true);
-  }
-
-  ngAfterViewInit() {
-    this.onResize();
-    if (this.isBrowser) {
-      this.nbSidebarService.collapse('mainMenu');
-    }
   }
 
   getMyRoles() {
@@ -218,7 +183,6 @@ export class SessionPageComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.trackSlot.embedded_video_stream) {
         this.embeddedVideoStream = this.trackSlot.embedded_video_stream;
         this.markUserObjectVisit('TrackSlot', this.trackSlot.id);
-        this.onResize();
       }
 
       if (this.speaker) {
@@ -254,52 +218,9 @@ export class SessionPageComponent implements OnInit, AfterViewInit, OnDestroy {
       if (data) {
         this.embeddedVideoStream = data;
         this.markUserObjectVisit('EmbeddedVideoStream', this.embeddedVideoStream.id);
-        this.onResize();
       }
     });
   }
-
-  // @HostListener('window:resize', ['$event'])
-  onResize(event?) {
-    if (window.innerWidth <= 1000) {
-      this.playerWidth = window.innerWidth - 20;
-      this.playerHeight = (this.playerWidth as number) / 1.78;
-    } else {
-      // this.playerWidth = this.videoContainer.nativeElement.offsetWidth - 20;
-      // this.playerHeight = this.videoContainer.nativeElement.offsetHeight - 25;
-    }
-  }
-
-  // tabUpdate(tab, type) {
-  //   switch (type) {
-  //     case 'new': {
-  //       switch (tab) {
-  //         case 'chat':
-  //           if (this.currentTab !== 'chat') {
-  //             this.chatCount += 1;
-  //           }
-  //           break;
-  //         case 'qna':
-  //           if (this.currentTab !== 'qna') {
-  //             this.questionCount += 1;
-  //           }
-  //           break;
-  //       }
-  //       break;
-  //     }
-  //     case 'open': {
-  //       switch (tab) {
-  //         case 'chat':
-  //           this.chatCount = 0;
-  //           break;
-  //         case 'qna':
-  //           this.questionCount = 0;
-  //           break;
-  //       }
-  //       break;
-  //     }
-  //   }
-  // }
 
   markUserObjectVisit(objectType, objectId) {
     if (this.isBrowser) {
@@ -311,20 +232,6 @@ export class SessionPageComponent implements OnInit, AfterViewInit, OnDestroy {
         app_token: this.authWatchService.getAppToken()
       }).subscribe();
     }
-  }
-
-  // toggleFullScreen(element) {
-  //   if (!this.isFullscreen && !this.document.fullscreenElement) {
-  //     if (this.document.body.requestFullscreen) {
-  //       this.document.body.requestFullscreen().then(r => this.isFullscreen = true);
-  //     }
-  //   } else if (this.document.fullscreenElement) {
-  //     this.document.exitFullscreen().then(r => this.isFullscreen = false);
-  //   }
-  // }
-
-  toggleSidebar() {
-    this.sidebarMinimize = !this.sidebarMinimize;
   }
 
 }

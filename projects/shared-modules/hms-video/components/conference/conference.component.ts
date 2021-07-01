@@ -1,9 +1,9 @@
-import { Component, Input, OnDestroy, OnInit, TemplateRef } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
 import { ICurrentUser } from 'projects/shared-models/current_user.model';
 import { IHmsClient } from 'projects/shared-modules/hms-video/models/hms-client.model';
 import { LibAuthwatchService } from 'projects/shared-services/lib-authwatch.service';
-import { combineLatest } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import { HmsClientManagerService } from '../../services/hms-client-manager.service';
 import { EHmsStates, HmsVideoStateService } from '../../services/hms-video-state.service';
 import { LocalmediaService } from '../../services/localmedia.service';
@@ -16,11 +16,13 @@ import { EHmsRoles } from '../enums/hms-roles.enum';
   styleUrls: ['./conference.component.scss']
 })
 export class ConferenceComponent implements OnInit, OnDestroy {
+
   @Input() roomId: string;
   @Input() serverClient: IHmsClient;
   @Input() client: any;
   @Input() selectedRole: EHmsRoles;
-  subscriptions = [];
+
+  subscriptions: Subscription[] = [];
   EHmsRoles = EHmsRoles;
 
   user: ICurrentUser;
@@ -45,9 +47,11 @@ export class ConferenceComponent implements OnInit, OnDestroy {
 
   numVids = 0;
 
-  Math = Math;
-
   screenShareStream = null;
+
+  location = location;
+
+  @ViewChild('userDisconnectedAlert') userDisconnectedAlert: TemplateRef<any>;
 
   constructor(
     private libAuthWatchService: LibAuthwatchService,
@@ -55,21 +59,18 @@ export class ConferenceComponent implements OnInit, OnDestroy {
     private localMediaService: LocalmediaService,
     private hmsLiveChannel: HmsLiveChannel,
     private hmsVideoStateService: HmsVideoStateService,
-    private dialogService: NbDialogService,
-  ) { }
+    private dialogService: NbDialogService
+  ) {
+  }
 
   ngOnDestroy() {
     this.endAllStreams();
-
-    for (let subs of this.subscriptions) {
-      subs.unsubscribe();
-    }
-
+    this.subscriptions.forEach(value => value.unsubscribe());
   }
 
   ngOnInit(): void {
     // setup the preselected devices
-    const deviceListener =  combineLatest([
+    const deviceListener = combineLatest([
       this.localMediaService.selectedAudioDevice$,
       this.localMediaService.selectedVideoDevice$,
       this.localMediaService.mic$,
@@ -86,7 +87,6 @@ export class ConferenceComponent implements OnInit, OnDestroy {
         this.modifyLocalStream(this.localStream);
       }
 
-
       this.updateCamera();
       this.updateMic();
 
@@ -95,18 +95,13 @@ export class ConferenceComponent implements OnInit, OnDestroy {
 
 
     // get currentUser
-    this.libAuthWatchService.currentUser$.subscribe(
-      data => {
-        this.user = data;
-      }
-    )
+    this.libAuthWatchService.currentUser$.subscribe(data => this.user = data);
 
     this.setStage();
 
     // fetch the client token
     this.connectToClient();
   }
-
 
   setStage() {
     // put the user on the stage only if the selected role is a guest or
@@ -115,15 +110,9 @@ export class ConferenceComponent implements OnInit, OnDestroy {
     }
   }
 
-
-
   connectToClient() {
     // this.client = this.hmsClientManagerService.createClient(this.user.name, this.hmsClient.token);
-    this.hmsClientManagerService.connectClient(this.client).subscribe(
-      data => {
-        this.setupListeners();
-      }
-    )
+    this.hmsClientManagerService.connectClient(this.client).subscribe(() => this.setupListeners());
   }
 
   setupListeners() {
@@ -135,16 +124,14 @@ export class ConferenceComponent implements OnInit, OnDestroy {
 
       // detect disconnect
       this.client.on('disconnect', () => {
-
       });
-
 
       // detect peer join
       this.client.on('peer-join', (room, peer) => {
         if (!this.peers[peer.uid]) {
           this.peers[peer.uid] = peer;
         }
-      })
+      });
 
       // detect peer leave
       this.client.on('peer-leave', (room, peer) => {
@@ -152,61 +139,56 @@ export class ConferenceComponent implements OnInit, OnDestroy {
       });
 
       // display the peer's stream
-      this.client.on('stream-add', (room,  peer, streamInfo) => {
+      this.client.on('stream-add', (room, peer, streamInfo) => {
         this.addPeerStream(peer, streamInfo);
       });
 
       // remove the peer's stream
       this.client.on('stream-remove', (room, peer, streamInfo) => {
-          // Remove remote stream if needed
-          this.removeStream(streamInfo.mid);
+        // Remove remote stream if needed
+        this.removeStream(streamInfo.mid);
       });
 
       // detect temporary socket disconnections
       this.client.on('disconnected', () => {
-        // probably reload the page
-        window.location.reload();
+        this.dialogService.open(this.userDisconnectedAlert, {
+          autoFocus: true,
+          closeOnBackdropClick: false,
+          closeOnEsc: false
+        });
       });
     }
-
   }
 
   joinRoom() {
-    this.hmsClientManagerService.joinRoom(this.client, this.roomId).subscribe(
-      data => {
-        this.updateConfStatus();
-        this.receiveChannelData();
-        if (this.onStage) {
-          // get the localstream
-          this.addLocalStream();
-        }
+    this.hmsClientManagerService.joinRoom(this.client, this.roomId).subscribe(() => {
+      this.updateConfStatus();
+      this.receiveChannelData();
+      if (this.onStage) {
+        // get the local stream
+        this.addLocalStream();
       }
-    );
+    });
   }
 
   addLocalStream() {
     // get the local stream and the publish it to the room
-    this.hmsClientManagerService.getLocalStream(this.client, this.audioDevice, this.videoDevice, this.mic, this.camera).subscribe(
-      data => {
-        this.localStream = data;
-        this.toggleVideo(this.camera);
-        this.toggleAudio(this.mic);
-        // publish localstream to the room
-        this.hmsClientManagerService.publishLocalStream(this.client, this.localStream, this.roomId).subscribe(
-          data => {
-
-            // TODO remove this interval
-            let interval = setInterval(() => {
-              if (this.localStream.mid) {
-                this.onStage = true;
-                this.updateStreams(this.client.uid, this.localStream.mid, data, this.localStream.options.screen);
-                clearInterval(interval);
-              }
-            }, 1000);
+    this.hmsClientManagerService.getLocalStream(this.client, this.audioDevice, this.videoDevice, this.mic, this.camera).subscribe(data => {
+      this.localStream = data;
+      this.toggleVideo(this.camera);
+      this.toggleAudio(this.mic);
+      // publish local stream to the room
+      this.hmsClientManagerService.publishLocalStream(this.client, this.localStream, this.roomId).subscribe(value => {
+        // TODO remove this interval
+        const interval = setInterval(() => {
+          if (this.localStream.mid) {
+            this.onStage = true;
+            this.updateStreams(this.client.uid, this.localStream.mid, value, this.localStream.options.screen);
+            clearInterval(interval);
           }
-        );
-      }
-    )
+        }, 1000);
+      });
+    });
   }
 
   modifyLocalStream(stream) {
@@ -227,81 +209,62 @@ export class ConferenceComponent implements OnInit, OnDestroy {
   }
 
   removeLocalStream() {
-    this.removeStream(this.localStream.mid)
-    this.hmsClientManagerService.unpublishLocalStream(this.client, this.localStream, this.roomId).subscribe(
-      data => {
-        this.localStream = null;
-      }
-    );
+    this.removeStream(this.localStream.mid);
+    this.hmsClientManagerService.unpublishLocalStream(this.client, this.localStream, this.roomId).subscribe(() => {
+      this.localStream = null;
+    });
   }
-
 
   addLocalScreen() {
-    this.hmsClientManagerService.getLocalScreen(this.client).subscribe(
-      data => {
-        this.localScreen = data;
+    this.hmsClientManagerService.getLocalScreen(this.client).subscribe(data => {
+      this.localScreen = data;
 
-        // publish localscreen using the same method to the room
-        this.hmsClientManagerService.publishLocalStream(this.client, this.localScreen, this.roomId).subscribe(
-          data => {
-
-
-            // TODO remove this interval
-            let interval = setInterval(() => {
-              if (data.mid) {
-                clearInterval(interval);
-                this.localScreen = data;
-                this.screenShare = true;
-                this.localScreen.getVideoTracks().forEach(track => {
-                  if ('contentHint' in track) {
-                    track.contentHint = 'text';
-                  }
-                });
-
-                let track = this.localScreen.getVideoTracks()[0];
-                if (track) {
-                  track.addEventListener('ended', () => {
-                    this.removeLocalScreen();
-                  });
-                }
-                this.updateStreams(this.client.uid, this.localScreen.mid, data, this.localStream.options.screen);
+      // publish local screen using the same method to the room
+      this.hmsClientManagerService.publishLocalStream(this.client, this.localScreen, this.roomId).subscribe(value => {
+        // TODO remove this interval
+        const interval = setInterval(() => {
+          if (value.mid) {
+            clearInterval(interval);
+            this.localScreen = value;
+            this.screenShare = true;
+            this.localScreen.getVideoTracks().forEach(track => {
+              if ('contentHint' in track) {
+                track.contentHint = 'text';
               }
-            }, 1000);
+            });
 
-
+            const videoTrack = this.localScreen.getVideoTracks()[0];
+            if (videoTrack) {
+              videoTrack.addEventListener('ended', () => this.removeLocalScreen());
+            }
+            this.updateStreams(this.client.uid, this.localScreen.mid, value, this.localStream.options.screen);
           }
-        );
-      }
-    )
+        }, 1000);
+      });
+    });
   }
-
 
   removeLocalScreen() {
     this.removeStream(this.localScreen.mid);
-    this.hmsClientManagerService.unpublishLocalStream(this.client, this.localScreen, this.roomId).subscribe(
-      data => {
-        this.screenShare = false;
-        this.localScreen = null;
-
-      }
-    );
+    this.hmsClientManagerService.unpublishLocalStream(this.client, this.localScreen, this.roomId).subscribe(() => {
+      this.screenShare = false;
+      this.localScreen = null;
+    });
   }
 
 
   addPeerStream(peer, streamInfo) {
-    this.hmsClientManagerService.getPeerStream(this.client, streamInfo.mid, this.roomId).subscribe(
-      data => {
-        if (!this.peers[peer.uid]) {
-          this.peers[peer.uid] = peer
-        }
-        this.updateStreams(peer.uid, streamInfo.mid, data, streamInfo.screen);
+    this.hmsClientManagerService.getPeerStream(this.client, streamInfo.mid, this.roomId).subscribe(data => {
+      if (!this.peers[peer.uid]) {
+        this.peers[peer.uid] = peer;
       }
-    )
+      this.updateStreams(peer.uid, streamInfo.mid, data, streamInfo.screen);
+    });
   }
 
 
   updateStreams(uid, mid, stream, screen?) {
-    this.streams[mid] = {uid, mid, stream};
+    this.streams[mid] = { uid, mid, stream };
     this.numVids = Object.keys(this.streams).length;
     if (screen || (stream.options && stream.options.screen)) {
       this.screenShareStream = mid;
@@ -315,8 +278,6 @@ export class ConferenceComponent implements OnInit, OnDestroy {
     delete this.streams[mid];
     this.numVids = Object.keys(this.streams).length;
   }
-
-
 
   // CONTROLS
   toggleVideo(value: boolean) {
@@ -344,13 +305,11 @@ export class ConferenceComponent implements OnInit, OnDestroy {
         this.removeLocalScreen();
       }
       this.onStage = !this.onStage;
+    } else if (!this.showSettings) {
+      this.showSettings = true;
     } else {
-      if (!this.showSettings) {
-        this.showSettings = true;
-      } else {
-        this.addLocalStream();
-        this.onStage = !this.onStage;
-      }
+      this.addLocalStream();
+      this.onStage = !this.onStage;
     }
   }
 
@@ -365,14 +324,13 @@ export class ConferenceComponent implements OnInit, OnDestroy {
         this.hmsLiveChannel.ACTIONS.END_STREAM,
         this.client.uid,
         {}
-      )
+      );
     }
     this.endAllStreams();
   }
 
-
   endAllStreams() {
-    let unsubscribableStreams = [];
+    const unsubscribableStreams = [];
 
     if (this.localStream) {
       unsubscribableStreams.push(this.hmsClientManagerService.unpublishLocalStream(this.client, this.localStream, this.roomId));
@@ -382,22 +340,16 @@ export class ConferenceComponent implements OnInit, OnDestroy {
       unsubscribableStreams.push(this.hmsClientManagerService.unpublishLocalStream(this.client, this.localScreen, this.roomId));
     }
 
-    const unsubscribeStreams =  combineLatest(unsubscribableStreams);
+    const unsubscribeStreams = combineLatest(unsubscribableStreams);
     this.hmsVideoStateService.setState(EHmsStates.ENDED);
 
-    unsubscribeStreams.subscribe(
-      data => {
-        // disconnect the client
-        this.hmsClientManagerService.disconnectClient(this.client);    // if user is a viewer or a guest
-      }, error => {
-        console.log('ERROR IN DISCONNECTING', error);
-      }
-    );
-
+    unsubscribeStreams.subscribe(() => {
+      // disconnect the client
+      this.hmsClientManagerService.disconnectClient(this.client);    // if user is a viewer or a guest
+    }, error => {
+      console.log('ERROR IN DISCONNECTING', error);
+    });
   }
-
-
-
 
   // HMS Live Channel
   updateConfStatus() {
@@ -407,7 +359,7 @@ export class ConferenceComponent implements OnInit, OnDestroy {
       {
         status: this.hmsVideoStateService.states.ROOM
       }
-    )
+    );
 
     this.updateCamera();
     this.updateMic();
@@ -420,7 +372,7 @@ export class ConferenceComponent implements OnInit, OnDestroy {
       {
         camera: this.camera
       }
-    )
+    );
   }
 
   updateMic() {
@@ -430,52 +382,49 @@ export class ConferenceComponent implements OnInit, OnDestroy {
       {
         mic: this.mic
       }
-    )
+    );
   }
 
 
-
   receiveChannelData() {
-    const receiveDataSubscription = this.hmsLiveChannel.channelData$[this.client.uid].subscribe(
-      data => {
-        if (data.uid && !this.peers[data.uid]) {
-          this.peers[data.uid] = {};
-        }
-        switch (data.action) {
-          case this.hmsLiveChannel.ACTIONS.EXISTING_USER: {
-            this.peers[data.uid].user = data.user
-          }
-          break;
-          case this.hmsLiveChannel.ACTIONS.UPDATE_USER: {
-            // do not update self user
-            this.peers[data.uid].user = data.user
-          }
-          break;
-          case this.hmsLiveChannel.ACTIONS.INVITE_TO_STAGE: {
-            if (!this.onStage) {
-              this.toggleStage();
-            }
-          }
-          break;
-          case this.hmsLiveChannel.ACTIONS.MUTE_PEER: {
-            if (this.mic) {
-              this.toggleAudio(false);
-            }
-          }
-          break;
-          case this.hmsLiveChannel.ACTIONS.REMOVE_FROM_STAGE: {
-            if (this.onStage) {
-              this.toggleStage();
-            }
-          }
-          break;
-          case this.hmsLiveChannel.ACTIONS.END_STREAM: {
-            this.endAllStreams();
-          }
-          break;
-        }
+    const receiveDataSubscription = this.hmsLiveChannel.channelData$[this.client.uid].subscribe(data => {
+      if (data.uid && !this.peers[data.uid]) {
+        this.peers[data.uid] = {};
       }
-    )
+      switch (data.action) {
+        case this.hmsLiveChannel.ACTIONS.EXISTING_USER: {
+          this.peers[data.uid].user = data.user;
+        }
+          break;
+        case this.hmsLiveChannel.ACTIONS.UPDATE_USER: {
+          // do not update self user
+          this.peers[data.uid].user = data.user;
+        }
+          break;
+        case this.hmsLiveChannel.ACTIONS.INVITE_TO_STAGE: {
+          if (!this.onStage) {
+            this.toggleStage();
+          }
+        }
+          break;
+        case this.hmsLiveChannel.ACTIONS.MUTE_PEER: {
+          if (this.mic) {
+            this.toggleAudio(false);
+          }
+        }
+          break;
+        case this.hmsLiveChannel.ACTIONS.REMOVE_FROM_STAGE: {
+          if (this.onStage) {
+            this.toggleStage();
+          }
+        }
+          break;
+        case this.hmsLiveChannel.ACTIONS.END_STREAM: {
+          this.endAllStreams();
+        }
+          break;
+      }
+    });
 
     this.subscriptions.push(receiveDataSubscription);
   }
@@ -486,16 +435,16 @@ export class ConferenceComponent implements OnInit, OnDestroy {
     this.hmsLiveChannel.sendData(
       this.hmsLiveChannel.ACTIONS.MUTE_PEER,
       this.client.uid,
-      {uid}
-    )
+      { uid }
+    );
   }
 
   removePeerFromStage(uid) {
     this.hmsLiveChannel.sendData(
       this.hmsLiveChannel.ACTIONS.REMOVE_FROM_STAGE,
       this.client.uid,
-      {uid}
-    )
+      { uid }
+    );
   }
 
 }

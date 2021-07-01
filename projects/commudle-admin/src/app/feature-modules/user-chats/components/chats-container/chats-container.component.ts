@@ -1,23 +1,23 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
-import {IDiscussionFollower} from 'projects/shared-models/discussion-follower.model';
-import {ICurrentUser} from 'projects/shared-models/current_user.model';
-import {SDiscussionsService} from 'projects/shared-components/services/s-discussions.service';
-import {LibAuthwatchService} from 'projects/shared-services/lib-authwatch.service';
-import {UserChatMessagesChannel} from 'projects/commudle-admin/src/app/feature-modules/user-chats/services/websockets/user-chat-messages.channel';
-import {UserChatsService} from 'projects/commudle-admin/src/app/feature-modules/user-chats/services/user-chats.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { UserChatsService } from 'projects/commudle-admin/src/app/feature-modules/user-chats/services/user-chats.service';
+import { UserChatMessagesChannel } from 'projects/commudle-admin/src/app/feature-modules/user-chats/services/websockets/user-chat-messages.channel';
+import { SDiscussionsService } from 'projects/shared-components/services/s-discussions.service';
+import { ICurrentUser } from 'projects/shared-models/current_user.model';
+import { IDiscussionFollower } from 'projects/shared-models/discussion-follower.model';
+import { LibAuthwatchService } from 'projects/shared-services/lib-authwatch.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chats-container',
   templateUrl: './chats-container.component.html',
-  styleUrls: ['./chats-container.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Default
+  styleUrls: ['./chats-container.component.scss']
 })
 export class ChatsContainerComponent implements OnInit, OnDestroy {
 
   // Number of allowed chat windows
   numChatWindows: number;
   // Chats windows distance from right
-  chatsWindowsRight = 310;
+  chatsWindowsRight = 322;
 
   // All the persons we can chat with
   allPersonalChatUsers: IDiscussionFollower[] = [];
@@ -25,7 +25,8 @@ export class ChatsContainerComponent implements OnInit, OnDestroy {
   discussionFollowers: IDiscussionFollower[] = [];
   // The current user
   currentUser: ICurrentUser;
-  currentUserSubscription;
+
+  subscriptions: Subscription[] = [];
 
   constructor(
     private sDiscussionService: SDiscussionsService,
@@ -37,10 +38,12 @@ export class ChatsContainerComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // Get current user data
-    this.currentUserSubscription = this.authWatchService.currentUser$.subscribe(data => this.currentUser = data);
+    this.subscriptions.push(this.authWatchService.currentUser$.subscribe(data => this.currentUser = data));
 
     // Get the current user's chats
-    this.sDiscussionService.getPersonalChats().subscribe(data => this.allPersonalChatUsers = data.discussion_followers);
+    this.subscriptions.push(this.sDiscussionService.getPersonalChats().subscribe(data => {
+      this.allPersonalChatUsers = data.discussion_followers;
+    }));
 
     // TODO: Make this better
     // Calculate screen width to find the number of chat windows that are allowed simultaneously
@@ -50,40 +53,30 @@ export class ChatsContainerComponent implements OnInit, OnDestroy {
     }
 
     // If clicked on messaging button in any user profile
-    this.userChatsService.followerIdChange$.subscribe(data => this.createChat(data));
+    this.subscriptions.push(this.userChatsService.followerIdChange$.subscribe(data => this.createChat(data)));
   }
 
   ngOnDestroy() {
-    this.currentUserSubscription.unsubscribe();
+    this.subscriptions.forEach(value => value.unsubscribe());
   }
 
   createChat(followerId: number) {
-    this.sDiscussionService.getOrCreatePersonalChat([followerId]).subscribe(data => {
+    this.subscriptions.push(this.sDiscussionService.getOrCreatePersonalChat([followerId]).subscribe(data => {
       // If chatting to a brand new user, include that in allPersonalChatUsers
       // Duplicates are added if done by .includes, hence this elaborate way of checking allPersonalChatUser id's
-      let isThere = false;
-      this.allPersonalChatUsers.forEach(value => {
-        if (value.id === data.id) {
-          isThere = true;
-        }
-      });
+      const isThere = this.discussionFollowers.some(value => value.id === data.id);
       if (!isThere) {
         this.allPersonalChatUsers.unshift(data);
       }
       this.openChat(data);
-    });
+    }));
   }
 
   // Open a chat based on the user clicked (event emitter from chats list component)
   openChat(follower: IDiscussionFollower) {
     // Add only if follower is not active
     // Duplicates are added if done by .includes, hence this elaborate way of checking discussionFollower id's
-    let isThere = false;
-    this.discussionFollowers.forEach(value => {
-      if (value.id === follower.id) {
-        isThere = true;
-      }
-    });
+    const isThere = this.discussionFollowers.some(value => value.id === follower.id);
     if (!isThere) {
       // Check if length exceeds the maximum allowed windows
       if (this.discussionFollowers.length >= this.numChatWindows && this.discussionFollowers[0]) {
@@ -119,4 +112,5 @@ export class ChatsContainerComponent implements OnInit, OnDestroy {
     }
     this.allPersonalChatUsers.unshift(value[0]);
   }
+
 }

@@ -53,6 +53,7 @@ export class SessionPageVideoComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    document.onfullscreenchange = () => this.isFullScreen = this.document.fullscreenElement;
   }
 
   ngAfterViewInit(): void {

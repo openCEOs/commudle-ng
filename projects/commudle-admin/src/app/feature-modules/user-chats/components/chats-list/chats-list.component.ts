@@ -1,8 +1,8 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {IDiscussionFollower} from 'projects/shared-models/discussion-follower.model';
-import {ICurrentUser} from 'projects/shared-models/current_user.model';
-import {LibAuthwatchService} from 'projects/shared-services/lib-authwatch.service';
-import {UserChatNotificationsChannel} from 'projects/commudle-admin/src/app/feature-modules/user-chats/services/websockets/user-chat-notifications.channel';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { UserChatNotificationsChannel } from 'projects/commudle-admin/src/app/feature-modules/user-chats/services/websockets/user-chat-notifications.channel';
+import { ICurrentUser } from 'projects/shared-models/current_user.model';
+import { IDiscussionFollower } from 'projects/shared-models/discussion-follower.model';
+import { LibAuthwatchService } from 'projects/shared-services/lib-authwatch.service';
 
 @Component({
   selector: 'app-chats-list',
@@ -11,17 +11,14 @@ import {UserChatNotificationsChannel} from 'projects/commudle-admin/src/app/feat
 })
 export class ChatsListComponent implements OnInit {
 
-  // Predefined constants
-  chatsListHeight = 0;
-  chatsListWidth = 300;
-
-  showLiveStatus = false;
-  unreadCount = 0;
-
   @Input() currentUser: ICurrentUser;
   @Input() allPersonalChatUsers: IDiscussionFollower[];
   @Output() getChat: EventEmitter<IDiscussionFollower> = new EventEmitter<IDiscussionFollower>();
   @Output() moveUserToTop: EventEmitter<IDiscussionFollower[]> = new EventEmitter<IDiscussionFollower[]>();
+
+  showLiveStatus = false;
+  showChat = false;
+  unreadCount = 0;
 
   constructor(
     private authWatchService: LibAuthwatchService,
@@ -38,12 +35,6 @@ export class ChatsListComponent implements OnInit {
     this.liveUpdates();
   }
 
-  // Toggle chats list height
-  toggleChatsListHeight() {
-    this.chatsListHeight = 75 - this.chatsListHeight;
-    this.unreadCount = 0;
-  }
-
   openChat(chatUser) {
     this.getChat.emit(chatUser);
   }
@@ -58,4 +49,5 @@ export class ChatsListComponent implements OnInit {
       }
     });
   }
+
 }

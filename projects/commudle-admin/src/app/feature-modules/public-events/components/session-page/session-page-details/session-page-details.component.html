@@ -1,17 +1,21 @@
 <nb-card class="session-page-details">
   <nb-card-body>
-    <p *ngIf="moment().isBetween(moment(startTime), moment(endTime))">
-      <span class="text-success">
+    <div *ngIf="moment().isBetween(moment(startTime), moment(endTime))">
+      <div class="text-success">
         <nb-icon icon="flash"></nb-icon>
         Live Now!
-      </span>
-      <small>
-        {{ moment(startTime).format('dddd Do MMM, YYYY h:mm A') }}
-        -
-        {{ moment(endTime).format('h:mm A') }}
-      </small>
+      </div>
+      <p>
+        <small>
+          {{ moment(startTime).format('dddd Do MMM, YYYY h:mm A') }}
+          -
+          {{ moment(endTime).format('h:mm A') }}
+        </small>
+      </p>
+    </div>
+    <p (click)="openViewers.emit()" *ngIf="userVisitData?.visiting_users_count > 0" class="clickable">
+      {{userVisitData.visiting_users_count}} watching now!
     </p>
-    <p *ngIf="userVisitData?.visiting_users_count > 0">{{userVisitData.visiting_users_count}} watching now!</p>
     <h5 class="event-name">
       <a [routerLink]="['/communities', community.slug, 'events', event.slug]" class="event">{{event.name}}</a>
       <span *ngIf="trackSlot"> | {{trackSlot.session_title}}</span>
